@@ -1,0 +1,31 @@
+__pycache__/
+*.pyc
+.env
+sessions/
+*.session
+labeling_service/uploads/
+.DS_Store
+Thumbs.db
+~$*
+upload_hf.log
+
+# Large files (GitHub limit 100 MB) — regenerate from main.ipynb or download separately
+training/fasttext_synthetic.txt
+training/train_synthetic.txt
+training/test_synthetic.txt
+training/train_v2.txt
+training/test_v2.txt
+*.mp4
+
+# Model weights (>100 MB) — Hugging Face: naadgob/kaznlp-weights
+models/models.zip
+models/_hf_cache/
+models/fasttext/
+models/xlm-roberta/lid/
+models/xlm-roberta/tone/
+models/xlm-roberta/*.pt
+models/tone_pretrained/**/*
+!models/tone_pretrained/README.md
+!models/tone_pretrained/**/README.md
+!models/xlm-roberta/.gitkeep
+**/.cache/

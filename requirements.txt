@@ -1,0 +1,13 @@
+pandas
+fasttext
+datasets
+huggingface_hub
+transformers
+torch
+sentencepiece
+telethon
+google-api-python-client
+beautifulsoup4
+requests
+tqdm
+lingua-language-detector

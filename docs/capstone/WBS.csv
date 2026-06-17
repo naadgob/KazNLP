@@ -1,0 +1,19 @@
+Дата,День,Задача,Часы,Статус,Артефакт
+2026-06-01,1,Финализировать Action Plan + WBS + аудит capstone,3,Готово,docs/capstone/*
+2026-06-02,2,Baseline FastText v1/v2 + Lingua диагностика на real mixed seeds,4,Готово,main.ipynb гл.1–4
+2026-06-03,3,Train/val/test split LID (stratified) + экспорт,3,Готово,data/training/filter/v1/
+2026-06-04,4,Fine-tune XLM-R-base LID v1/v2 (Kaggle 2×T4),5,Готово,models/xlm-roberta/xlm-r_v2.pt
+2026-06-05,5,Синтетика LID + tone (hard patterns) train-only,3,Готово,scripts/synthetic_*.py tone_synthetic.csv
+2026-06-06,6,LID test: macro-F1 CM per-class (gold 461),4,Готово,main.ipynb гл.5
+2026-06-07,7,Сравнение эволюции FastText → XLM-R (разные eval sets),3,Готово,Final_Report.md §4.2–4.3
+2026-06-08,8,Скоринг корпуса XLM-R → main.csv / main_mixed.csv,4,Готово,data/processed/main_mixed.csv (16364)
+2026-06-09,9,Ручной аудит 100 random mixed из корпуса,4,Отложено,audit_mixed_100.csv — P1
+2026-06-10,10,Разбор ошибок LID + tone (примеры в отчёте),3,Частично,Final_Report.md §5
+2026-06-11,11,Публичный demo: FastAPI + web (вместо Gradio),4,Готово,run_demo.py inference/ web/
+2026-06-12,12,Tone gold 3529 + train 4411 + eval v1/v2,5,Готово,tone_v1.pt scripts/eval_tone_v1.py
+2026-06-13,13,Final Report (все разделы + метрики),4,Готово,docs/capstone/Final_Report.md/.docx
+2026-06-14,14,Презентация outline + design prompt,3,Готово,Presentation_Outline.md Presentation_Design_Prompt.md
+2026-06-15,15,FastText v2 на gold test 461 (head-to-head таблица),2,В работе,main.ipynb — автор
+2026-06-16,16,Репетиция защиты + demo warm-up,2,План,—
+2026-06-17,17,Финальная сдача: docx xlsx pptx код данные,4,В работе,docs/capstone/*.docx WBS.xlsx
+2026-06-18,18,Резерв / защита,—,Буфер,—

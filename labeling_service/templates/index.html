@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KazNLP — Language Labeler</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app app-wide">
+    <header class="header">
+      <div>
+        <h1>KazNLP Labeler</h1>
+        <p class="subtitle">Language (ru / kz / mixed) · Sentiment (positive / negative / skip)</p>
+      </div>
+      <div class="badge-row" id="headerBadges"></div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button type="button" class="tab active" data-tab="manual">Manual review</button>
+      <button type="button" class="tab" data-tab="llm">LLM batch</button>
+      <button type="button" class="tab" data-tab="upload">Upload</button>
+    </nav>
+
+    <!-- Upload -->
+    <section id="tab-upload" class="tab-panel hidden">
+      <div class="panel">
+        <h2>Upload CSV</h2>
+        <p class="hint">Columns: <code>text</code>, <code>language</code>, <code>label</code>. Existing <code>language</code> saved as <code>llm_language</code> hint.</p>
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="fileInput" accept=".csv" hidden>
+          <p>Drag &amp; drop CSV or <button type="button" id="browseBtn" class="link-btn">browse</button></p>
+        </div>
+        <div id="fileInfo" class="file-info hidden"></div>
+        <div id="preview" class="preview hidden">
+          <h3>Preview</h3>
+          <div class="table-wrap"><table id="previewTable"><thead><tr><th>text</th><th>language</th><th>label</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <button id="openManualBtn" class="btn primary hidden">Open manual review</button>
+        <div id="exportBlockUpload" class="export-block hidden">
+          <h3 class="section-title">Export</h3>
+          <select class="select export-mode">
+            <option value="full">Full dataset (all rows)</option>
+            <option value="labeled">Language labeled only</option>
+            <option value="manual">Language manual gold</option>
+            <option value="tone_labeled">Tone labeled (pos/neg)</option>
+            <option value="tone_manual">Tone manual gold</option>
+          </select>
+          <p class="hint export-hint">—</p>
+          <button type="button" class="btn secondary download-btn">Download CSV</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Manual -->
+    <section id="tab-manual" class="tab-panel">
+      <div id="manualEmpty" class="panel empty-state">
+        <p>Upload a CSV first, then label here row by row.</p>
+        <button type="button" class="btn primary" data-goto="upload">Go to upload</button>
+      </div>
+
+      <div id="manualWorkspace" class="hidden manual-layout">
+        <aside class="panel manual-sidebar">
+          <h2>Metrics</h2>
+          <div class="metric-grid" id="metricGrid"></div>
+          <div class="dist-bar" id="distBar"></div>
+
+          <h3 class="section-title">Session labels</h3>
+          <div class="class-counts" id="sessionClassCounts"></div>
+          <div class="dist-bar session" id="sessionDistBar"></div>
+          <p class="hint balance-hint" id="sessionBalanceHint">—</p>
+
+          <h3 class="section-title">Manual gold total</h3>
+          <div class="class-counts" id="manualClassCounts"></div>
+          <div class="dist-bar manual" id="manualDistBar"></div>
+          <p class="hint balance-hint" id="manualBalanceHint">—</p>
+
+          <h3 class="section-title">Labeling mode</h3>
+          <div class="mode-toggle" role="group" aria-label="Labeling mode">
+            <button type="button" class="mode-btn active" data-mode="language">Language</button>
+            <button type="button" class="mode-btn" data-mode="sentiment">Sentiment</button>
+          </div>
+
+          <h3 class="section-title">Queue</h3>
+          <label class="field-label">Filter</label>
+          <select id="queueFilter" class="select">
+            <optgroup label="Sentiment queue" class="filter-sentiment-only">
+              <option value="mixed_unlabeled_tone">Mixed · tone unlabeled</option>
+              <option value="unlabeled_tone">All tone unlabeled</option>
+              <option value="tone_positive">Tone: positive</option>
+              <option value="tone_negative">Tone: negative</option>
+              <option value="tone_skip">Tone: skip</option>
+              <option value="tone_manual">Tone: manual gold</option>
+            </optgroup>
+            <optgroup label="Work queue" class="filter-language-only">
+              <option value="unlabeled">Unlabeled</option>
+              <option value="unlabeled_kazakh">Unlabeled + Kazakh letters</option>
+              <option value="llm_mixed">LLM said mixed</option>
+              <option value="needs_review">Needs review</option>
+              <option value="disagree">You ≠ LLM</option>
+              <option value="manual">Manual only</option>
+            </optgroup>
+            <optgroup label="Heuristic QA">
+              <option value="potential_real_mixed">Potential real mixed (RU+KZ signals)</option>
+              <option value="suspicious">Suspicious label (any class)</option>
+              <option value="ru_but_kazakh">RU label + Kazakh letters</option>
+              <option value="kaz_letters_in_ru_text">Kaz letters + RU text (any label)</option>
+              <option value="mixed_false_positive">MIXED without bilingual signal</option>
+              <option value="kz_no_signal">KZ without Kazakh signal</option>
+              <option value="low_signal">Low signal (short / emoji)</option>
+            </optgroup>
+            <optgroup label="By current label">
+              <option value="label_ru">Class: RU</option>
+              <option value="label_kz">Class: KZ</option>
+              <option value="label_mixed">Class: MIXED</option>
+              <option value="mixed">Current mixed only</option>
+            </optgroup>
+            <optgroup label="Domain (heuristic)" class="filter-sentiment-only">
+              <option value="domain_review">Domain: review / product</option>
+              <option value="domain_logistics">Domain: logistics only</option>
+              <option value="domain_other">Domain: other / off-topic</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option value="all">All rows</option>
+            </optgroup>
+          </select>
+          <div class="filter-sentiment-only" id="domainFilterBlock">
+            <label class="field-label">Domain filter</label>
+            <select id="domainFilter" class="select">
+              <option value="any">Any domain</option>
+              <option value="review">Review / product</option>
+              <option value="logistics">Logistics only</option>
+              <option value="other">Other / off-topic</option>
+            </select>
+          </div>
+          <label class="field-label">Limit to class</label>
+          <select id="classFilter" class="select">
+            <option value="any">Any class</option>
+            <option value="unlabeled">Unlabeled only (no manual label)</option>
+            <option value="ru">RU only (manual or LLM hint)</option>
+            <option value="kz">KZ only (manual or LLM hint)</option>
+            <option value="mixed">MIXED only (manual or LLM hint)</option>
+          </select>
+          <label class="field-label">Search text</label>
+          <input type="search" id="queueSearch" class="input" placeholder="keyword…">
+          <p class="hint" id="queueInfo">—</p>
+
+          <h3 class="section-title">Export</h3>
+          <select id="exportMode" class="select export-mode">
+            <option value="full">Full dataset (all rows)</option>
+            <option value="labeled">Language labeled only</option>
+            <option value="manual">Language manual gold</option>
+            <option value="tone_labeled">Tone labeled (pos/neg)</option>
+            <option value="tone_manual">Tone manual gold</option>
+          </select>
+          <p class="hint export-hint" id="exportHint">—</p>
+          <button type="button" id="downloadBtnManual" class="btn secondary download-btn">Download CSV</button>
+        </aside>
+
+        <main class="panel manual-main">
+          <div class="manual-top">
+            <div>
+              <span id="rowPosition" class="row-pos">—</span>
+              <span id="rowMeta" class="row-meta"></span>
+            </div>
+            <div class="progress-wrap compact">
+              <div class="progress-bar"><div id="manualProgressFill" class="progress-fill"></div></div>
+              <div id="manualProgressText" class="progress-text">0%</div>
+            </div>
+          </div>
+
+          <div id="textCard" class="text-card" tabindex="0">—</div>
+
+          <div id="translateBlock" class="translate-block hidden">
+            <div class="translate-header">
+              <span class="translate-label">Перевод на русский <span class="muted-inline">(MyMemory, подсказка)</span></span>
+              <button type="button" id="translateBtn" class="btn secondary sm" title="Hotkey T">↻ Перевести</button>
+            </div>
+            <div id="translateCard" class="translate-card" aria-live="polite">—</div>
+          </div>
+
+          <div class="session-strip" id="sessionStrip" aria-live="polite"></div>
+
+          <div id="hintRow" class="hint-row hidden">
+            <span id="llmHint" class="pill"></span>
+            <span id="kazCharsHint" class="pill"></span>
+            <span id="domainHint" class="pill hidden"></span>
+            <span id="toneHint" class="pill hidden"></span>
+            <span id="realMixedHint" class="pill hidden"></span>
+            <span id="qualityHint" class="pill hidden"></span>
+            <span id="disagreeHint" class="pill warn hidden">≠ your label vs LLM</span>
+          </div>
+          <ul id="mismatchList" class="mismatch-list hidden"></ul>
+
+          <div id="languageActions" class="label-actions">
+            <button type="button" class="btn-lang ru" data-lang="ru" title="Key 1 or R">RU <kbd>1</kbd></button>
+            <button type="button" class="btn-lang kz" data-lang="kz" title="Key 2 or K">KZ <kbd>2</kbd></button>
+            <button type="button" class="btn-lang mixed" data-lang="mixed" title="Key 3 or M">MIXED <kbd>3</kbd></button>
+          </div>
+          <div id="sentimentActions" class="label-actions hidden">
+            <button type="button" class="btn-tone positive" data-tone="positive" title="Key 1 or P">POSITIVE <kbd>1</kbd></button>
+            <button type="button" class="btn-tone negative" data-tone="negative" title="Key 2 or N">NEGATIVE <kbd>2</kbd></button>
+            <button type="button" class="btn-tone skip" data-tone="skip" title="Key 3 or X">SKIP <kbd>3</kbd></button>
+          </div>
+
+          <div class="manual-controls">
+            <label class="checkbox" title="Автоматически запрашивать перевод при смене строки (блок перевода всегда виден)">
+              <input type="checkbox" id="autoTranslate" checked> Авто-перевод RU
+            </label>
+            <label class="checkbox language-only"><input type="checkbox" id="flagReview"> Flag needs_review</label>
+            <button type="button" id="shuffleBtn" class="btn secondary sm" title="20 random samples from current filter">Shuffle 20</button>
+            <button type="button" id="undoBtn" class="btn secondary sm">Undo <kbd>Z</kbd></button>
+            <button type="button" id="prevBtn" class="btn secondary sm">← Prev</button>
+            <button type="button" id="skipBtn" class="btn secondary sm">Skip</button>
+            <button type="button" id="nextBtn" class="btn secondary sm">Next →</button>
+          </div>
+
+          <p class="shortcuts" id="shortcutHint">Hotkeys: <kbd>1</kbd>/<kbd>R</kbd> ru · <kbd>2</kbd>/<kbd>K</kbd> kz · <kbd>3</kbd>/<kbd>M</kbd> mixed · <kbd>T</kbd> перевод · <kbd>Z</kbd> undo · <kbd>←</kbd><kbd>→</kbd> nav · <kbd>S</kbd> shuffle</p>
+          <p id="saveStatus" class="save-status" aria-live="polite"></p>
+        </main>
+      </div>
+    </section>
+
+    <!-- LLM -->
+    <section id="tab-llm" class="tab-panel hidden">
+      <div class="warning">LLM labels are <strong>draft</strong> — use manual tab for gold labels.</div>
+      <main class="grid">
+        <section class="panel">
+          <h2>LLM options</h2>
+          <div class="options">
+            <label class="checkbox"><input type="checkbox" id="onlyEmpty"> Only empty language</label>
+            <label class="checkbox"><input type="checkbox" id="resume"> Resume LLM job</label>
+          </div>
+          <button id="startBtn" class="btn primary" disabled>Start LLM labeling</button>
+          <div id="exportBlockLlm" class="export-block hidden">
+            <h3 class="section-title">Export</h3>
+            <select class="select export-mode">
+              <option value="full">Full dataset (all rows)</option>
+              <option value="labeled">Language labeled only</option>
+              <option value="manual">Language manual gold</option>
+              <option value="tone_labeled">Tone labeled (pos/neg)</option>
+              <option value="tone_manual">Tone manual gold</option>
+            </select>
+            <p class="hint export-hint">—</p>
+            <button type="button" class="btn secondary download-btn">Download CSV</button>
+          </div>
+        </section>
+        <section class="panel stream-panel">
+          <h2>LLM progress</h2>
+          <div class="progress-wrap"><div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div><div id="progressText" class="progress-text">0 / 0</div></div>
+          <div class="stats-row">
+            <div class="stat"><span class="stat-label">ru</span><span id="statRu" class="stat-value">0</span></div>
+            <div class="stat"><span class="stat-label">kz</span><span id="statKz" class="stat-value">0</span></div>
+            <div class="stat"><span class="stat-label">mixed</span><span id="statMixed" class="stat-value">0</span></div>
+            <div class="stat"><span class="stat-label">ETA</span><span id="statEta" class="stat-value">—</span></div>
+          </div>
+          <div id="batchStatus" class="batch-status">Upload CSV first.</div>
+          <div id="log" class="log"></div>
+        </section>
+      </main>
+    </section>
+
+    <footer class="footer">KazNLP · manual gold labels for code-switching research</footer>
+  </div>
+  <script src="/static/app.js"></script>
+  <script src="/static/manual.js"></script>
+</body>
+</html>
