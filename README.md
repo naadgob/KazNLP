@@ -1,78 +1,82 @@
+> **Russian version:** [README_RU.md](README_RU.md)
+
 # KazNLP
 
 **Capstone:** Samsung Innovation Campus · Deep Learning / NLP  
-**Автор:** Bogdan Savelyev  
-**Задача:** тональность (pos/neg) на **смешанных** отзывах 2GIS, где в одном тексте русский и казахский. Без честного фильтра **ru / kz / mixed** такую выборку не собрать: auto-LID на Telegram помечает почти всё как mixed, хотя большая часть строк — kz с русским заёмным словом.
+**Author:** Bogdan Savelyev  
+**Task:** polarity (pos/neg) on **mixed** 2GIS reviews that switch between Russian and Kazakh in one text. You can't build that sample honestly without a reliable **ru / kz / mixed** filter: auto-LID on Telegram tags almost everything as mixed, while most of those lines are Kazakh with a Russian loanword.
 
-Полная история и цифры для жюри: [`STORY.md`](STORY.md) · веб-версия [`web/story.html`](web/story.html) (генерация: `python scripts/build_story_landing.py`).
+Full narrative and numbers for reviewers: [`STORY.md`](STORY.md) · web version [`web/story.html`](web/story.html) (build: `python scripts/build_story_landing.py`).
+
+> **Name note:** Nazarbayev University already ships an open toolkit also called KazNLP. This repo is a separate student/capstone project. For papers and outreach, prefer a distinct short name (e.g. ShalaLID / kk-ru SwitchFilter) so the two are not confused.
 
 ---
 
-## Ключевые числа (канон защиты)
+## Key numbers (defense canon)
 
-Источник: `main.ipynb` (cells 45, 173, 237, 255, 268), `docs/capstone/Final_Report.md`, `data/processed/metrics_tone_test.json`.
+Sources: `main.ipynb` (cells 45, 173, 237, 255, 268), `docs/capstone/Final_Report.md`, `data/processed/metrics_tone_test.json`.
 
-| Что | Значение | Файл / ячейка |
-|-----|----------|----------------|
-| Telegram (контекст LID) | 422 141 | `data/raw/telegram_code-switch_dataset.csv` |
-| Kaspi | 39 129 | `data/processed/kaspi_reviews.csv` |
-| Gold LID (ru/kz/mixed) | 3 076 (1000 / 999 / 1077) | `data/processed/gold_v1.csv` · cell 144 |
+| What | Value | File / cell |
+|------|-------|-------------|
+| Telegram (LID context) | 422,141 | `data/raw/telegram_code-switch_dataset.csv` |
+| Kaspi | 39,129 | `data/processed/kaspi_reviews.csv` |
+| Gold LID (ru/kz/mixed) | 3,076 (1000 / 999 / 1077) | `data/processed/gold_v1.csv` · cell 144 |
 | LID test | n = 461 | `data/training/filter/v1/test.csv` |
-| **XLM-R LID v2** | macro-F1 **96,56%** | `models/xlm-roberta/xlm-r_v2.pt` · cells 173, 268 |
-| `main.csv` | 331 468 строк | cell 237 |
-| `main_mixed.csv` | 16 364 (model-predicted, не audited) | cell 237 |
-| Gold tone (2GIS mixed) | 3 529 | `data/processed/tone_mixed_balanced_audited.csv` |
-| Synthetic tone (train only) | 882 (~20% от train) | `data/processed/tone_synthetic.csv` |
-| Tone train | 4 411 | `data/processed/tone_train_mixed.csv` |
+| **XLM-R LID v2** | macro-F1 **96.56%** | `models/xlm-roberta/xlm-r_v2.pt` · cells 173, 268 |
+| `main.csv` | 331,468 rows | cell 237 |
+| `main_mixed.csv` | 16,364 (model-predicted, not audited) | cell 237 |
+| Gold tone (2GIS mixed) | 3,529 | `data/processed/tone_mixed_balanced_audited.csv` |
+| Synthetic tone (train only) | 882 (~20% of train) | `data/processed/tone_synthetic.csv` |
+| Tone train | 4,411 | `data/processed/tone_train_mixed.csv` |
 | Tone test | n = 525 | `data/training/tone/v1/test.csv` |
-| **Mixed Tone v1** | accuracy **97,33%** | `data/processed/metrics_tone_test.json` · `scripts/eval_tone_v1.py` |
-| Mixed Tone v2 (не в prod) | 96,19% | тот же JSON |
-| Диагностика FT-mixed | ~1,66% true positive | cells 45–46 |
+| **Mixed Tone v1** | accuracy **97.33%** | `data/processed/metrics_tone_test.json` · `scripts/eval_tone_v1.py` |
+| Mixed Tone v2 (not in prod) | 96.19% | same JSON |
+| FT-mixed diagnostic | ~1.66% true positive | cells 45–46 |
 
-**Оговорка по tone 97,33%:** ~94% gold от `llm_composer`; метрика на hold-out = agreement с LLM-разметкой, не blind human eval. Подробнее в Final Report §3.3.3.
+**Tone 97.33% caveat:** ~94% of tone gold comes from `llm_composer`; the hold-out metric is agreement with LLM drafts, not a blind human eval. Details in Final Report §3.3.3.
 
-**О диске:** если пересчитывали CSV после cell 237, счётчики на диске могут отличаться (например `main.csv` >331k). На защите опирайтесь на **cell 237** и таблицу выше.
+**On-disk counts:** if CSVs were rebuilt after cell 237, disk row counts can drift (e.g. `main.csv` >331k). For defense and papers, trust **cell 237** and the table above.
 
 ---
 
-## Быстрый старт
+## Quick start
 
-### Веса моделей (~8,2 GB)
+### Model weights (~8.2 GB)
 
-Не в git (лимит GitHub). **Hugging Face:**
+Not in git (GitHub size limits). **Hugging Face:**
 
 **https://huggingface.co/datasets/naadgob/kaznlp-weights**
 
 ```bash
 pip install huggingface_hub
-python scripts/download_kaznlp_weights.py   # скачать models.zip и распаковать
-python scripts/setup_demo_models.py         # symlink RU/KZ + проверка путей
+python scripts/download_kaznlp_weights.py   # download models.zip and unpack
+python scripts/setup_demo_models.py         # symlink RU/KZ + path checks
 ```
 
-Локально: распакуйте `models/models.zip` в корень репо (рядом с `README.md`).
+Locally: unpack `models/models.zip` into the repo root (next to `README.md`).
 
-### Demo (сайт + inference API)
+### Demo (site + inference API)
 
 ```bash
 pip install -r inference/requirements.txt
 python run_demo.py
 ```
 
-Windows: `start_demo.bat`. Открыть http://127.0.0.1:8000/ (`web/index.html` + `POST /analyze`).
+Windows: `start_demo.bat`. Open http://127.0.0.1:8000/ (`web/index.html` + `POST /analyze`).
 
-Первый запрос может вернуть **503** 30–60 с, пока грузятся четыре модели (~8,5 GB). Сначала скачайте веса (см. выше) или положите `models.zip` вручную.
+The first request may return **503** for 30–60 s while four models (~8.5 GB) load. Download weights first (above) or drop `models.zip` in place by hand.
 
-### Labeler (gold LID и tone)
+### Labeler (gold LID and tone)
 
 ```bash
 pip install -r requirements-labeler.txt
-ollama pull qwen2.5:3b    # для LLM-batch языка
+ollama pull qwen2.5:3b    # for LLM-batch language drafts
 python run_labeler.py
 ```
 
-Порт по умолчанию 8000 (если занят — следующий свободный). См. [`labeling_service/README.md`](labeling_service/README.md).
+Default port 8000 (next free port if busy). See [`labeling_service/README.md`](labeling_service/README.md).
 
-### Метрики tone (без ноутбука)
+### Tone metrics (no notebook)
 
 ```bash
 python scripts/eval_tone_v1.py
@@ -80,23 +84,23 @@ python scripts/eval_tone_v1.py
 
 ---
 
-## Структура репозитория
+## Repo layout
 
 ```
 KazNLP/
-├── main.ipynb                      # основной пайплайн (270 ячеек)
-├── README.md · STORY.md
+├── main.ipynb                      # main pipeline (270 cells)
+├── README.md · README_RU.md · STORY.md · STORY_RU.md
 ├── run_demo.py · run_labeler.py · start_demo.bat
-├── collect_2gis_reviews.py         # скрапер 2GIS (CLI)
+├── collect_2gis_reviews.py         # 2GIS scraper (CLI)
 ├── essential_ru_kaz.py · popular_ru_kaz.py
 ├── requirements.txt · requirements-labeler.txt
-├── .env.example                    # шаблон секретов (не коммитить .env)
+├── .env.example                    # secrets template (do not commit .env)
 │
 ├── data/
 │   ├── raw/                        # telegram_code-switch_dataset.csv, 2gis_*.csv
 │   ├── processed/                  # gold_v1, main.csv, tone_*, metrics_tone_test.json
-│   │   └── synthetic_tone/         # батчи tone synthetic (после generate_tone_synthetic.py)
-│   ├── manual labeling/            # история ручной LID-разметки
+│   │   └── synthetic_tone/         # tone synthetic batches (after generate_tone_synthetic.py)
+│   ├── manual labeling/            # history of manual LID labeling
 │   │   └── language/               # kaspi-telegram_part, lingua_candidates_*, mixed-heuristic-seed
 │   └── training/
 │       ├── filter/v1/              # LID train · val · test (gold)
@@ -109,79 +113,80 @@ KazNLP/
 │
 ├── training/                       # fasttext_synthetic.txt · train_v2.txt · test_v2.txt · …
 ├── inference/                      # FastAPI: app.py · pipeline.py · config.py · test_api.py
-├── labeling_service/               # labeler UI + LLM batch (см. README внутри)
+├── labeling_service/               # labeler UI + LLM batch (see README inside)
 │   ├── main.py · manual_labeling.py · text_heuristics.py
 │   ├── templates/index.html
 │   └── static/                     # app.js · manual.js · style.css
 │
 ├── web/
-│   ├── index.html                  # лендинг + live demo
-│   ├── story.html                  # нарратив для жюри (build_story_landing.py)
+│   ├── index.html                  # landing + live demo
+│   ├── story.html                  # jury narrative (build_story_landing.py)
 │   ├── assets/
-│   │   ├── labeler/                # 01–03 PNG для карусели story
+│   │   ├── labeler/                # 01–03 PNG for story carousel
 │   │   └── _verify-sources.png
 │   └── README.md
 │
-├── scripts/                        # eval · export · deck · synthetic (см. таблицу)
-│   └── archive/                    # старые LID synthetic/EDA (не defense path)
+├── scripts/                        # eval · export · deck · synthetic (see table)
+│   └── archive/                    # old LID synthetic/EDA (not defense path)
 │
 ├── docs/
 │   ├── README.md
 │   ├── tone_dataset_overview.md
-│   └── capstone/                   # SIC paperwork (ниже)
+│   ├── outreach/                   # professor outreach drafts
+│   └── capstone/                   # SIC paperwork (below)
 │
 └── sessions/                       # Telethon *.session (gitignored)
 ```
 
-### `docs/capstone/` (сдача Samsung)
+### `docs/capstone/` (Samsung hand-in)
 
-| Файл | Назначение |
-|------|------------|
-| `Action_Plan.md` / `.docx` | стартовый план |
-| `Final_Report.md` / `.docx` | финальный отчёт |
-| `WBS.csv` | WBS (`.xlsx`: `export_capstone_docs.py`) |
-| `presentation.pptx` | **единственная презентация** для SIC |
-| `kaznlp-story-deck-self.html` | HTML-источник pptx (`build_self_deck.py`, может отсутствовать до пересборки) |
-| `PRESENTATION_OUTLINE.md` | аутлайн 20 слайдов |
-| `CAPSTONE_AUDIT.md` | чеклист перед защитой |
+| File | Role |
+|------|------|
+| `Action_Plan.md` / `.docx` | kickoff plan |
+| `Final_Report.md` / `.docx` | final report |
+| `WBS.csv` | WBS (`.xlsx` via `export_capstone_docs.py`) |
+| `presentation.pptx` | **only** SIC presentation |
+| `kaznlp-story-deck-self.html` | HTML source for pptx (`build_self_deck.py`; may be missing until rebuild) |
+| `PRESENTATION_OUTLINE.md` | 20-slide outline |
+| `CAPSTONE_AUDIT.md` | pre-defense checklist |
 
-Live на защите: [`web/story.html`](web/story.html) (не заменяет `presentation.pptx` в paperwork).
+Live defense narrative: [`web/story.html`](web/story.html) (does not replace `presentation.pptx` in paperwork).
 
 ---
 
-## Пайплайны
+## Pipelines
 
-### 1. Language ID (`main.ipynb`, главы 1–6)
+### 1. Language ID (`main.ipynb`, chapters 1–6)
 
-| Этап | Артефакт |
-|------|----------|
+| Stage | Artifact |
+|-------|----------|
 | Synthetic 480k | `training/fasttext_synthetic.txt` |
 | FastText v1/v2 | `models/fasttext/fasttext_v1.bin`, `models/fasttext/fasttext_v2.bin` |
-| Сбор Telegram | `data/raw/telegram_code-switch_dataset.csv` |
-| Сбор Kaspi | `data/processed/kaspi_reviews.csv` |
-| Ручной gold | `data/processed/gold_v1.csv` |
+| Telegram collect | `data/raw/telegram_code-switch_dataset.csv` |
+| Kaspi collect | `data/processed/kaspi_reviews.csv` |
+| Hand gold | `data/processed/gold_v1.csv` |
 | XLM-R LID v2 | `models/xlm-roberta/xlm-r_v2.pt` |
-| Мастер-корпус | `data/processed/main.csv`, `main_mixed.csv` |
+| Master corpus | `data/processed/main.csv`, `main_mixed.csv` |
 
-Baseline ladder на одном test n=461: §10 (cells 267–268).
+Baseline ladder on one shared test (n=461): §10 (cells 267–268).
 
-### 2. Mixed tone (`main.ipynb`, глава 8)
+### 2. Mixed tone (`main.ipynb`, chapter 8)
 
-| Файл | Строк | Роль |
-|------|------:|------|
-| `tone_mixed_balanced_audited.csv` | 3 529 | `data/processed/` — gold pos/neg, 2GIS mixed |
-| `tone_synthetic.csv` | 882 | `data/processed/` — synthetic только в train |
-| `tone_train_mixed.csv` | 4 411 | `data/processed/` — итоговый train |
+| File | Rows | Role |
+|------|-----:|------|
+| `tone_mixed_balanced_audited.csv` | 3,529 | `data/processed/` — gold pos/neg, 2GIS mixed |
+| `tone_synthetic.csv` | 882 | `data/processed/` — synthetic in train only |
+| `tone_train_mixed.csv` | 4,411 | `data/processed/` — merged train |
 | `data/training/tone/v1/test.csv` | 525 | Gold-only hold-out |
 
-Регенерация synthetic:
+Regenerate synthetic:
 
 ```bash
 python scripts/generate_tone_synthetic.py
 python scripts/merge_tone_synthetic.py
 ```
 
-Gold tone: 2GIS → LID v2 → `language == mixed` → `run_labeler.py` (ручной режим + `llm_composer` draft) → баланс pos/neg.
+Gold tone path: 2GIS → LID v2 → `language == mixed` → `run_labeler.py` (manual mode + `llm_composer` draft) → balance pos/neg.
 
 ### 3. Inference cascade
 
@@ -197,70 +202,71 @@ python scripts/download_tone_pretrained.py
 python scripts/verify_tone_pretrained.py
 ```
 
-См. [`models/tone_pretrained/README.md`](models/tone_pretrained/README.md).
+See [`models/tone_pretrained/README.md`](models/tone_pretrained/README.md).
 
 ---
 
-## Скрипты (основные)
+## Main scripts
 
-| Скрипт | Назначение |
-|--------|------------|
-| `setup_demo_models.py` | HF download + symlink RU/KZ + проверка путей |
-| `download_kaznlp_weights.py` | Скачать `models.zip` с Hugging Face |
-| `upload_kaznlp_weights.py` | Залить веса на HF (автор, token write) |
-| `eval_tone_v1.py` | Метрики tone v1/v2 → `metrics_tone_test.json` |
-| `generate_tone_synthetic.py` | 8 батчей synthetic tone (882) |
-| `merge_tone_synthetic.py` | Сборка `tone_train_mixed.csv` |
-| `download_tone_pretrained.py` | RU/KZ HuggingFace weights |
+| Script | Role |
+|--------|------|
+| `setup_demo_models.py` | HF download + RU/KZ symlinks + path checks |
+| `download_kaznlp_weights.py` | Pull `models.zip` from Hugging Face |
+| `upload_kaznlp_weights.py` | Push weights to HF (author, write token) |
+| `eval_tone_v1.py` | Tone v1/v2 metrics → `metrics_tone_test.json` |
+| `generate_tone_synthetic.py` | 8 synthetic tone batches (882) |
+| `merge_tone_synthetic.py` | Build `tone_train_mixed.csv` |
+| `download_tone_pretrained.py` | RU/KZ Hugging Face weights |
 | `verify_tone_pretrained.py` | Smoke-test pretrained |
 | `build_self_deck.py` | `kaznlp-story-deck-self.html` → `presentation.pptx` |
 | `html_deck_to_pptx.py` | HTML deck → PowerPoint (screenshot export) |
-| `export_capstone_docs.py` | md → docx/xlsx для сдачи |
-| `build_story_landing.py` | `web/story.html` (live-нарратив для жюри) |
-| `train_xlmr_ddp.py` | DDP-обучение XLM-R (вынесено из ноутбука) |
-| `merge_synthetic.py` | LID synthetic → `data/processed/synthetic/synthetic_all.csv` (папка появляется после прогона) |
-| `insert_tone_eval_notebook.py` | Вставка tone-eval ячеек в ноутбук (разовая утилита) |
+| `export_capstone_docs.py` | md → docx/xlsx for hand-in |
+| `build_story_landing.py` | `web/story.html` (live jury narrative) |
+| `train_xlmr_ddp.py` | DDP XLM-R training (extracted from notebook) |
+| `merge_synthetic.py` | LID synthetic → `data/processed/synthetic/synthetic_all.csv` (folder appears after run) |
+| `insert_tone_eval_notebook.py` | One-shot helper to insert tone-eval cells |
 
-Исторические batch-скрипты: `scripts/archive/` (не нужны для defense path).
+Historical batch scripts: `scripts/archive/` (not needed for the defense path).
 
-**Defense path (минимум):** cells **45, 173, 237, 268** + `eval_tone_v1.py` + `run_demo.py`.
+**Defense path (minimum):** cells **45, 173, 237, 268** + `eval_tone_v1.py` + `run_demo.py`.
 
 ---
 
-## Документация
+## Documentation
 
-| Файл | Содержание |
-|------|------------|
-| [`STORY.md`](STORY.md) | Полный нарратив, таблица источников |
-| [`web/story.html`](web/story.html) | То же для жюри в браузере |
-| [`docs/README.md`](docs/README.md) | Индекс всей документации |
-| [`docs/capstone/Final_Report.md`](docs/capstone/Final_Report.md) | Финальный отчёт |
+| File | Content |
+|------|---------|
+| [`STORY.md`](STORY.md) | Full narrative, source table |
+| [`web/story.html`](web/story.html) | Same story in the browser |
+| [`docs/README.md`](docs/README.md) | Docs index |
+| [`docs/capstone/Final_Report.md`](docs/capstone/Final_Report.md) | Final report |
 | [`docs/tone_dataset_overview.md`](docs/tone_dataset_overview.md) | Gold tone, synthetic, QC |
-| [`docs/capstone/PRESENTATION_OUTLINE.md`](docs/capstone/PRESENTATION_OUTLINE.md) | Структура презентации |
-| [`docs/capstone/CAPSTONE_AUDIT.md`](docs/capstone/CAPSTONE_AUDIT.md) | Чеклист SIC |
-| [`docs/capstone/presentation.pptx`](docs/capstone/presentation.pptx) | Презентация SIC (единственный pptx) |
+| [`docs/capstone/PRESENTATION_OUTLINE.md`](docs/capstone/PRESENTATION_OUTLINE.md) | Presentation structure |
+| [`docs/capstone/CAPSTONE_AUDIT.md`](docs/capstone/CAPSTONE_AUDIT.md) | SIC checklist |
+| [`docs/capstone/presentation.pptx`](docs/capstone/presentation.pptx) | SIC deck (only pptx) |
+| [`docs/outreach/professor-outreach.md`](docs/outreach/professor-outreach.md) | Outreach list + draft emails |
 | [`labeling_service/README.md`](labeling_service/README.md) | Labeler setup |
 | [`web/README.md`](web/README.md) | Demo site |
 
-Презентация (SIC): [`docs/capstone/presentation.pptx`](docs/capstone/presentation.pptx) · live: [`web/story.html`](web/story.html) · пересборка HTML: `python scripts/build_self_deck.py`
+SIC presentation: [`docs/capstone/presentation.pptx`](docs/capstone/presentation.pptx) · live: [`web/story.html`](web/story.html) · rebuild HTML: `python scripts/build_self_deck.py`
 
 ---
 
-## Важные замечания
+## Caveats
 
-- Колонка `language` в сыром Telegram — метка **сборщика** (FastText), не ground truth. По эвристике `is_real_mixed()` только ~**1,66%** FT-mixed — настоящий code-switch.
-- **16 364** mixed в `main.csv` — предсказание LID v2, без выборочного аудита всего корпуса.
-- `main.ipynb` **не** воспроизводится через Run All; не перезапускать Telethon cells **31, 35, 41, 88**.
-- Не коммитить: `.env`, `sessions/`, `labeling_service/uploads/`.
+- The `language` column in raw Telegram is the **collector** label (FastText), not ground truth. Under the `is_real_mixed()` heuristic only ~**1.66%** of FT-mixed lines are real code-switches.
+- The **16,364** mixed rows in `main.csv` are LID v2 predictions, not a full human audit of the corpus.
+- `main.ipynb` does **not** replay via Run All; do not re-run Telethon cells **31, 35, 41, 88**.
+- Do not commit: `.env`, `sessions/`, `labeling_service/uploads/`.
 
 ---
 
-## Секреты (`.env.example`)
+## Secrets (`.env.example`)
 
-| Переменная | Зачем |
-|------------|--------|
-| `HF_TOKEN` | HuggingFace datasets / models; **write** — только для `upload_kaznlp_weights.py` |
+| Variable | Why |
+|----------|-----|
+| `HF_TOKEN` | Hugging Face datasets / models; **write** only for `upload_kaznlp_weights.py` |
 | `TELEGRAM_API_ID`, `TELEGRAM_API_HASH` | Telethon |
-| `GEMINI_API_KEY` | Опционально для labeler (`LABELER_PROVIDER=gemini`) |
-| `YOUTUBE_API_KEY` | YouTube-сбор (частично в ноутбуке) |
-| `OLLAMA_*` | Labeler LLM-batch (по умолчанию) |
+| `GEMINI_API_KEY` | Optional for labeler (`LABELER_PROVIDER=gemini`) |
+| `YOUTUBE_API_KEY` | YouTube collect (partial in notebook) |
+| `OLLAMA_*` | Labeler LLM-batch (default) |

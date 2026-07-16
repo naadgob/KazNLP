@@ -8,6 +8,8 @@ labeling_service/uploads/
 Thumbs.db
 ~$*
 upload_hf.log
+hf_upload.log
+*.log
 
 # Large files (GitHub limit 100 MB) — regenerate from main.ipynb or download separately
 training/fasttext_synthetic.txt
@@ -26,6 +28,8 @@ models/xlm-roberta/tone/
 models/xlm-roberta/*.pt
 models/tone_pretrained/**/*
 !models/tone_pretrained/README.md
+!models/tone_pretrained/README_RU.md
 !models/tone_pretrained/**/README.md
+!models/tone_pretrained/**/README_RU.md
 !models/xlm-roberta/.gitkeep
 **/.cache/

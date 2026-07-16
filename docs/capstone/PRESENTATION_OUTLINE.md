@@ -1,374 +1,376 @@
-# KazNLP — план и аутлайн презентации (self-contained)
+> **Russian version:** [PRESENTATION_OUTLINE_RU.md](PRESENTATION_OUTLINE_RU.md)
 
-**Источник нарратива:** `STORY.md`  
-**Назначение:** документальная презентация для самостоятельного чтения (без спикера)  
-**Формат:** 20 слайдов · 16:9 · ~40–50 сек чтения на слайд → **15–18 мин**  
-**Дата:** 15.06.2026  
-**Автор:** Bogdan Savelyev
+# KazNLP — presentation plan and outline (self-contained)
+
+**Narrative source:** `STORY.md`  
+**Purpose:** documentary presentation for reading without a speaker  
+**Format:** 20 slides · 16:9 · ~40–50 s reading per slide → **15–18 min**  
+**Date:** 15.06.2026  
+**Author:** Bogdan Savelyev
 
 ---
 
-## План (как устроена презентация)
+## Plan (how the deck is structured)
 
-### Цель
+### Goal
 
-Читатель без доступа к автору понимает: какую проблему в KZ digital решает проект, что именно сделали, почему каждый шаг был нужен, какие числа доказаны, где границы, как воспроизвести.
+A reader without access to the author understands: which KZ digital problem the project solves, what was done, why each step was needed, which numbers are proven, where the limits are, and how to reproduce.
 
-### Аудитория
+### Audience
 
-Будущий ты, коллега, рецензент отчёта, жюри в асинхронном режиме. Не live defense: на слайде должно быть достаточно prose, а не заголовок + три bullet.
+Future you, a colleague, a report reviewer, jury in async mode. Not live defense: each slide needs enough prose, not headline + three bullets.
 
 ### ONE BIG THING
 
-Авто-LID в KZ соцмедиа помечает почти всё как mixed. KazNLP измерил шум, собрал gold **3 076**, доказал XLM-R v2 **96,56%** macro-F1 на едином gold test и собрал filter-first pipeline до demo.
+Auto-LID in KZ social media tags almost everything as mixed. KazNLP measured the noise, built gold **3,076**, proved XLM-R v2 **96.56%** macro-F1 on a single gold test, and assembled a filter-first pipeline through demo.
 
-### Архитектура истории (4 акта)
+### Story architecture (4 acts)
 
-| Акт | Слайды | Содержание | Источник в STORY.md |
+| Act | Slides | Content | Source in STORY.md |
 |-----|--------|------------|---------------------|
-| **I — Проблема** | 01–05 | мир KZ, боль, примеры, измерение шума | Часть I |
-| **II — Тупики** | 06–09 | синтетика, FT, Lingua, вывод «нужен gold» | Главы 1–4 |
-| **III — Доказательство** | 10–15 | gold, XLM-R, ladder, корпус, оговорки | Главы 5–7 |
-| **IV — Продукт** | 16–20 | tone, cascade, demo, limits, итог | Главы 8–10, III |
+| **I — Problem** | 01–05 | KZ world, pain, examples, noise measurement | Part I |
+| **II — Dead ends** | 06–09 | synthetic, FT, Lingua, “need gold” conclusion | Chapters 1–4 |
+| **III — Proof** | 10–15 | gold, XLM-R, ladder, corpus, caveats | Chapters 5–7 |
+| **IV — Product** | 16–20 | tone, cascade, demo, limits, conclusion | Chapters 8–10, III |
 
-### Контракт слайда (self-contained)
+### Slide contract (self-contained)
 
-На каждом слайде четыре блока:
+Each slide has four blocks:
 
-1. **Вопрос** — что должен понять читатель  
-2. **История** — 2–5 предложений prose на слайде  
-3. **Доказательство** — число, таблица, схема, цитата  
-4. **Вывод** — одна строка, мост к следующему слайду  
+1. **Question** — what the reader should understand  
+2. **Story** — 2–5 prose sentences on the slide  
+3. **Evidence** — number, table, diagram, quote  
+4. **Therefore** — one line, bridge to next slide  
 
-### Визуальный spine
+### Visual spine
 
-Слева постоянная **chapter rail**: Act I → II → III → IV + номер слайда. Читатель всегда видит, где он в хронологии `main.ipynb`.
+Persistent **chapter rail** on the left: Act I → II → III → IV + slide number. Reader always sees where they are in `main.ipynb` chronology.
 
-### Story guard (запрещённые формулировки)
+### Story guard (forbidden wording)
 
-- «подтверждённых / честных mixed» для **16 364**
-- LID **97%** (округление **96,56%**)
-- Tone **97,33%** без оговорки про LLM-labels
-- «16k human-audited»
+- “confirmed / honest mixed” for **16,364**
+- LID **97%** (round **96.56%** correctly)
+- Tone **97.33%** without LLM-label caveat
+- “16k human-audited”
 
-### Deliverable (следующий шаг после аутлайна)
+### Deliverable (next step after outline)
 
-HTML (пересборка): `python scripts/build_self_deck.py` → `docs/capstone/kaznlp-story-deck-self.html`  
+HTML (rebuild): `python scripts/build_self_deck.py` → `docs/capstone/kaznlp-story-deck-self.html`  
 PPTX (SIC): `docs/capstone/presentation.pptx`  
-Экспорт pptx: `python scripts/html_deck_to_pptx.py docs/capstone/kaznlp-story-deck-self.html -o docs/capstone/presentation.pptx`  
-Live на защите: `web/story.html` (`python scripts/build_story_landing.py`)
+Export pptx: `python scripts/html_deck_to_pptx.py docs/capstone/kaznlp-story-deck-self.html -o docs/capstone/presentation.pptx`  
+Live defense: `web/story.html` (`python scripts/build_story_landing.py`)
 
 ---
 
-## Аутлайн: 20 слайдов с текстом
+## Outline: 20 slides with text
 
 ---
 
-### Слайд 01 · Act I · Открытие
+### Slide 01 · Act I · Opening
 
-**Layout:** `splitScene` — слева prose, справа схема pipeline  
-**Вопрос:** Зачем вообще отдельный проект про LID в Казахстане?
+**Layout:** `splitScene` — prose left, pipeline diagram right  
+**Question:** Why a separate LID project in Kazakhstan?
 
-**История (текст на слайде):**  
-В Telegram, на Kaspi и в 2GIS люди пишут шала-казахский: русский и казахский в одном сообщении. Чтобы считать долю двуязычия или учить тональность, сначала нужно отделить ru, kz и mixed. KazNLP — это pipeline «сначала язык, потом тон», собранный на реальном корпусе **422k+** строк, а не на учебной выборке.
+**Story (on slide):**  
+In Telegram, on Kaspi, and in 2GIS people write shala-Kazakh: Russian and Kazakh in one message. To count bilingual share or train tone, you first separate ru, kz, and mixed. KazNLP is a “language first, then tone” pipeline on a real **422k+** corpus, not a toy sample.
 
-**Доказательство:** схема `TEXT → LID → ROUTE → TONE`  
-**Вывод:** Без точного LID любая аналитика по mixed строится на шуме.
+**Evidence:** diagram `TEXT → LID → ROUTE → TONE`  
+**Therefore:** Without accurate LID, any mixed analytics rests on noise.
 
-**Footer:** KazNLP · Bogdan Savelyev · SIC capstone · июнь 2026
-
----
-
-### Слайд 02 · Act I · Где живёт проблема
-
-**Layout:** `ucScene` — карточки источников данных  
-**Вопрос:** Это лабораторная задача или реальные тексты?
-
-**История:**  
-Корпус собран из KZ digital: **422 141** комментарий Telegram (Telethon), **39 129** отзывов Kaspi, отзывы 2GIS для tone. Колонка `language` при сборе Telegram ставится FastText v1 — это метка сборщика, не ground truth. Проект работает с тем, что люди реально пишут, а не с синтетикой в вакууме.
-
-**Доказательство:** три источника + цифры строк  
-**Вывод:** Проблема масштабируется вместе с объёмом данных.
+**Footer:** KazNLP · Bogdan Savelyev · SIC capstone · June 2026
 
 ---
 
-### Слайд 03 · Act I · Что ломается без фильтра
+### Slide 02 · Act I · Where the problem lives
+
+**Layout:** `ucScene` — data source cards  
+**Question:** Lab task or real text?
+
+**Story:**  
+Corpus from KZ digital: **422,141** Telegram comments (Telethon), **39,129** Kaspi reviews, 2GIS reviews for tone. Telegram `language` at scrape is FastText v1 — collector label, not ground truth. The project works on what people actually write, not synthetic in a vacuum.
+
+**Evidence:** three sources + row counts  
+**Therefore:** The problem scales with data volume.
+
+---
+
+### Slide 03 · Act I · What breaks without a filter
 
 **Layout:** `editorialStack`  
-**Вопрос:** Кому мешает неточный LID?
+**Question:** Who is hurt by bad LID?
 
-**История:**  
-Исследователь кладёт «mixed» в корпус для sentiment и подмешивает kz с русским заёмом. Аналитик строит дашборд по языкам. Продуктовая команда видит «массовое двуязычие» в комментариях. Во всех случаях ошибка одна: auto-LID путает code-switch с заёмным словом в казахской грамматике. Пока граница не проведена, цифры и модели учатся на шуме.
+**Story:**  
+A researcher adds “mixed” to a sentiment corpus and mixes in kz with Russian loans. An analyst builds language dashboards. A product team sees “mass bilingualism” in comments. Same failure mode: auto-LID confuses code-switch with a loanword in Kazakh grammar. Until the boundary is drawn, numbers and models train on noise.
 
-**Доказательство:** короткая таблица «роль → что ломается»  
-**Вывод:** Нужен измеримый фильтр, а не ещё одна эвристика.
-
----
-
-### Слайд 04 · Act I · Граница классов
-
-**Layout:** `compareDuet` — две колонки с цитатами  
-**Вопрос:** Где проходит граница mixed и kz?
-
-**История:**  
-«Курьер молодец, уақытында әкелді» — две языковые фразы, это **mixed**. «Качествосы жақсы, арзан» — казахская грамматика с русским заёмом, это **kz**, не code-switch. Наивный LID видит кириллицу и казахские буквы и часто ставит mixed на втором примере. Именно такие строки дают ложные срабатывания в масштабе корпуса.
-
-**Доказательство:** две цитаты side-by-side + подписи ru/kz/mixed  
-**Вывод:** Задача не «есть ли казахские буквы», а «есть ли переключение языковых фраз».
+**Evidence:** short table “role → what breaks”  
+**Therefore:** Need a measurable filter, not another heuristic.
 
 ---
 
-### Слайд 05 · Act I · Pivot — измерили шум
+### Slide 04 · Act I · Class boundary
 
-**Layout:** `evidenceWall` — сетка 10×10 + метрики  
-**Вопрос:** Насколько сильно врёт auto-LID?
+**Layout:** `compareDuet` — two quote columns  
+**Question:** Where is the mixed vs kz line?
 
-**История:**  
-Вместо спора «все mixed» проект измерил шум. На срезе **27 628** FT-mixed эвристика `is_real_mixed()` пропустила **460** строк (~**1,66%**). После FT v2 на корпусе **66 462** mixed precision по той же эвристике — **2,32%** (1 542/66 462). Эвристика не gold (пропускает shala-Kazakh без ә/ң), но порядок величины шума зафиксирован. Из ~100 auto-mixed настоящих code-switch — единицы.
+**Story:**  
+«Курьер молодец, уақытында әкелді» — two language phrases, **mixed**. «Качествосы жақсы, арзан» — Kazakh grammar with Russian loan, **kz**, not code-switch. Naive LID sees Cyrillic and Kazakh letters and often tags mixed on the second example. Those rows drive false hits at corpus scale.
 
-**Доказательство:** 1,66% · 2,32% · 460/27 628 · 1 542/66 462  
-**Вывод:** Синтетика и правила не спасут без ручного эталона — переходим к тому, что пробовали.
+**Evidence:** two quotes side-by-side + ru/kz/mixed labels  
+**Therefore:** Task is not “are there Kazakh letters” but “are there switched language phrases.”
 
 ---
 
-### Слайд 06 · Act II · Синтетика
+### Slide 05 · Act I · Pivot — measured noise
+
+**Layout:** `evidenceWall` — 10×10 grid + metrics  
+**Question:** How wrong is auto-LID?
+
+**Story:**  
+Instead of arguing “everyone is mixed,” the project measured noise. On **27,628** FT-mixed rows, `is_real_mixed()` kept **460** (~**1.66%**). After FT v2 on corpus **66,462** mixed, precision on same heuristic — **2.32%** (1,542/66,462). Heuristic is not gold (misses shala-Kazakh without ә/ң), but noise magnitude is fixed. Of ~100 auto-mixed, real code-switches are single digits.
+
+**Evidence:** 1.66% · 2.32% · 460/27,628 · 1,542/66,462  
+**Therefore:** Synthetic and rules won't save without manual gold — what we tried next.
+
+---
+
+### Slide 06 · Act II · Synthetic
 
 **Layout:** `editorialStack`  
-**Вопрос:** Почему 480k синтетики не решили задачу?
+**Question:** Why didn't 480k synthetic solve it?
 
-**История:**  
-Старт в `main.ipynb` (cells 0–21): Hugging Face KazSAnDRA **180 064** + clapAI ru **164 148**, генерация **480 000** строк ru/kz/mixed со словарями заимствований, FastText v1. На hold-out **96 000** строк F1 **84,96%**. На бумаге LID выглядел решённым. Реальный Telegram показал обратное: красивый synthetic F1 не переносится на KZ соцмедиа.
+**Story:**  
+Start in `main.ipynb` (cells 0–21): Hugging Face KazSAnDRA **180,064** + clapAI ru **164,148**, **480,000** ru/kz/mixed rows with loanword vocabularies, FastText v1. Hold-out **96,000** rows F1 **84.96%**. On paper LID looked solved. Real Telegram showed the opposite: pretty synthetic F1 does not transfer to KZ social media.
 
-**Доказательство:** 480k · F1 84,96% · cells 0–21  
-**Вывод:** Synthetic — baseline, не production.
+**Evidence:** 480k · F1 84.96% · cells 0–21  
+**Therefore:** Synthetic is baseline, not production.
 
 ---
 
-### Слайд 07 · Act II · Реальный корпус
+### Slide 07 · Act II · Real corpus
 
 **Layout:** `timelineStrip`  
-**Вопрос:** Что случилось, когда подключили Telegram?
+**Question:** What happened when Telegram was added?
 
-**История:**  
-Сбор Telethon по KZ-каналам (cells 22–44). FastText v1 ставит `language` при сборе. Датасет рос: **146 206** → **241 576** → **422 141** на диске. Визуальная проверка: почти всё, что помечено mixed, выглядит как обычный ru или kz с заёмом. Ключевой вопрос проекта родился здесь: сколько из auto-mixed — настоящий code-switch?
+**Story:**  
+Telethon collection from KZ channels (cells 22–44). FastText v1 sets `language` at scrape. Dataset grew: **146,206** → **241,576** → **422,141** on disk. Visual check: almost everything tagged mixed looks like plain ru or kz with a loan. The project's key question appeared here: how much of auto-mixed is real code-switch?
 
-**Доказательство:** рост корпуса по волнам  
-**Вывод:** Нужна диагностика, не сразу трансформер.
+**Evidence:** corpus growth waves  
+**Therefore:** Diagnostics first, not transformers immediately.
 
 ---
 
-### Слайд 08 · Act II · Четыре тупика
+### Slide 08 · Act II · Four dead ends
 
 **Layout:** `timelineStrip`  
-**Вопрос:** Что пробовали до gold и почему остановились?
+**Question:** What was tried before gold and why it stopped?
 
-**История:**  
-**FT v2** (cells 45–64): recall **95,51%** на **868** seeds, но precision **2,32%** на корпусе. **Lingua v2**: **95,97%** на seeds; на gold test recall mixed **98,76%**, precision **76,81%** — высокий recall при низком precision опасен для фильтра. **LLM для gold LID** отвергнут (высокий FP на mixed). **YouTube** (~4,7k) не доводили. Kaspi **39 129** добавил второй домен с тем же шумом auto-labels.
+**Story:**  
+**FT v2** (cells 45–64): recall **95.51%** on **868** seeds, but precision **2.32%** on corpus. **Lingua v2**: **95.97%** on seeds; on gold test recall mixed **98.76%**, precision **76.81%** — high recall, low precision is dangerous for filtering. **LLM for gold LID** rejected (high FP on mixed). **YouTube** (~4.7k) not finished. Kaspi **39,129** added a second domain with the same auto-label noise.
 
-**Доказательство:** четыре ветки с цифрами  
-**Вывод:** Нужны ручной эталон и модель с контекстом целой фразы.
-
----
-
-### Слайд 09 · Act II · Мост к решению
-
-**Layout:** `manifesto` — крупный текст на тёмном фоне  
-**Вопрос:** Что нужно вместо правил?
-
-**История:**  
-Короткие пути исчерпаны: синтетика, дообученный FastText, token-level Lingua. Следующий шаг — gold LID с проверяемым протоколом split и XLM-RoBERTa, который видит фразу целиком. Принцип: filter-first — сначала точный LID на gold, потом скоринг корпуса, потом tone только на mixed.
-
-**Доказательство:** схема ДО → ПУТЬ → ПОСЛЕ (из STORY.md)  
-**Вывод:** Act III — как строили эталон и доказывали качество.
+**Evidence:** four branches with numbers  
+**Therefore:** Need manual gold and a model with full-phrase context.
 
 ---
 
-### Слайд 10 · Act III · Gold LID
+### Slide 09 · Act II · Bridge to solution
+
+**Layout:** `manifesto` — large text on dark background  
+**Question:** What replaces rules?
+
+**Story:**  
+Shortcuts exhausted: synthetic, retrained FastText, token-level Lingua. Next: gold LID with auditable split protocol and XLM-RoBERTa that sees the full phrase. Principle: filter-first — accurate LID on gold, then corpus scoring, then tone on mixed only.
+
+**Evidence:** BEFORE → PATH → AFTER diagram (from STORY.md)  
+**Therefore:** Act III — how gold was built and quality proved.
+
+---
+
+### Slide 10 · Act III · Gold LID
 
 **Layout:** `evidenceWall`  
-**Вопрос:** Как собирали эталон?
+**Question:** How was gold built?
 
-**История:**  
-Kaspi + Telegram, очистка `cheap_clean`: **388 748** → **254 601** строка. Gold батчами: ручная разметка, heuristic-batch (только mixed), очередь Lingua-кандидатов. После dedup **3 076** строк: ru **1 000**, kz **999**, mixed **1 077** → `gold_v1.csv`. LLM в gold LID не использовали.
+**Story:**  
+Kaspi + Telegram, `cheap_clean`: **388,748** → **254,601** rows. Gold in batches: manual labeling, heuristic-batch (mixed only), Lingua candidate queue. After dedup **3,076** rows: ru **1,000**, kz **999**, mixed **1,077** → `gold_v1.csv`. LLM not used in gold LID.
 
-**Доказательство:** bar ru/kz/mixed + 3 076  
-**Вывод:** Есть эталон; нужен честный протокол обучения.
+**Evidence:** bar ru/kz/mixed + 3,076  
+**Therefore:** Gold exists; need honest training protocol.
 
 ---
 
-### Слайд 11 · Act III · Протокол split
+### Slide 11 · Act III · Split protocol
 
 **Layout:** `editorialStack`  
-**Вопрос:** Почему метрики можно доверять?
+**Question:** Why can we trust the metrics?
 
-**История:**  
-Stratified split 80/10/10, `random_state=42`: train **2 691**, val **462**, test **461** (gold-only). **538** synthetic hard-паттернов только в train. Вес gold : synthetic = **3:1**. XLM-R учится на сыром **`text`**, не `text_norm`: нормализация режет bilingual-сигнал (~219/1077 mixed теряют признаки). Val и test — только gold.
+**Story:**  
+Stratified split 80/10/10, `random_state=42`: train **2,691**, val **462**, test **461** (gold-only). **538** synthetic hard patterns train-only. Gold : synthetic weight **3:1**. XLM-R trains on raw **`text`**, not `text_norm`: normalization cuts bilingual signal (~219/1077 mixed lose features). Val and test — gold only.
 
-**Доказательство:** таблица split + два правила (synth train-only, raw text)  
-**Вывод:** Можно обучать и сравнивать модели на одном test.
+**Evidence:** split table + two rules (synth train-only, raw text)  
+**Therefore:** Can train and compare models on one test.
 
 ---
 
-### Слайд 12 · Act III · XLM-R LID v2
+### Slide 12 · Act III · XLM-R LID v2
 
 **Layout:** `evidenceWall` + CM  
-**Вопрос:** Какой результат дала модель?
+**Question:** What result did the model give?
 
-**История:**  
-XLM-RoBERTa-base, Kaggle 2× T4, AdamW lr 2e-5. v1: **95,92%** macro-F1; **v2: 96,56%** на gold test **n = 461**. Confusion matrix v2: ru **150/150**, kz **142/150**, mixed **153/161**. **14 из 16** ошибок — путаница kz ↔ mixed, граница, которую сложнее всего размечать.
+**Story:**  
+XLM-RoBERTa-base, Kaggle 2× T4, AdamW lr 2e-5. v1: **95.92%** macro-F1; **v2: 96.56%** on gold test **n = 461**. CM v2: ru **150/150**, kz **142/150**, mixed **153/161**. **14 of 16** errors — kz ↔ mixed, the hardest boundary to label.
 
-**Доказательство:** 96,56% + CM + cells 173  
-**Вывод:** LID v2 — production-модель; сравним с baselines на том же test.
+**Evidence:** 96.56% + CM + cells 173  
+**Therefore:** LID v2 is production model; compare to baselines on same test.
 
 ---
 
-### Слайд 13 · Act III · Baseline ladder
+### Slide 13 · Act III · Baseline ladder
 
 **Layout:** `ladderArena` — bars + footnote  
-**Вопрос:** Почему не остановились на FastText или Lingua?
+**Question:** Why not stop at FastText or Lingua?
 
-**История:**  
-§10 `main.ipynb` (cells 267–268): все LID-модели на одном `test.csv` (**n = 461**). FastText v1 **63,24%** → v2 **70,92%** → Lingua v2 **88,63%** → XLM-R v2 **96,56%** macro-F1. Только XLM-R v2 даёт balanced mixed P/R ~**95%**. Lingua v2 ловит почти все mixed (recall 98,76%), но precision 76,81% — для фильтра корпуса без проверки непригодна.
+**Story:**  
+§10 `main.ipynb` (cells 267–268): all LID models on one `test.csv` (**n = 461**). FastText v1 **63.24%** → v2 **70.92%** → Lingua v2 **88.63%** → XLM-R v2 **96.56%** macro-F1. Only XLM-R v2 gives balanced mixed P/R ~**95%**. Lingua v2 catches almost all mixed (recall 98.76%) but precision 76.81% — unsuitable for corpus filter without review.
 
-**Доказательство:** ladder bars + footnote «один test.csv»  
-**Вывод:** Главный научный результат — LID; применяем к корпусу.
+**Evidence:** ladder bars + footnote “one test.csv”  
+**Therefore:** Main scientific result is LID; apply to corpus.
 
 ---
 
-### Слайд 14 · Act III · Корпус 331k
+### Slide 14 · Act III · 331k corpus
 
 **Layout:** `funnelStage`  
-**Вопрос:** Что получилось на полном пуле?
+**Question:** What happened on the full pool?
 
-**История:**  
-XLM-R v2 перескорил Kaspi+Telegram → `kaspi-telegram_dataset_v2.csv` (**254 652**). Добавлены 2GIS negative/positive. Финальная сборка в **cell 237**: **`main.csv` — 331 468** (ru **281 409** · kz **33 695** · mixed **16 364**). Промежуточные ячейки 203/221 содержат устаревшие счётчики; каноничное число — только cell 237.
+**Story:**  
+XLM-R v2 rescored Kaspi+Telegram → `kaspi-telegram_dataset_v2.csv` (**254,652**). Added 2GIS negative/positive. Final assembly in **cell 237**: **`main.csv` — 331,468** (ru **281,409** · kz **33,695** · mixed **16,364**). Intermediate cells 203/221 have stale counts; canonical number is cell 237 only.
 
-**Доказательство:** воронка 331 468 → 16 364  
-**Вывод:** 16k — следующий слайд объясняет, что это значит и чего не значит.
+**Evidence:** funnel 331,468 → 16,364  
+**Therefore:** 16k — next slide explains what that means and what it does not.
 
 ---
 
-### Слайд 15 · Act III · Qualifier 16k
+### Slide 15 · Act III · Qualifier 16k
 
 **Layout:** `editorialStack` + badge «model-predicted»  
-**Вопрос:** Что 16 364 mixed НЕ означает?
+**Question:** What does 16,364 mixed NOT mean?
 
-**История:**  
-`main_mixed.csv` — предсказания XLM-R v2, не ручной аудит. Corpus audit 100 random mixed из Action Plan не выполняли. Gold test mixed P/R ~**95%** на **n = 461** не переносится автоматически на **16 364** строк корпуса. Корректная формулировка: «отфильтровали 16 364 кандидата по LID v2»; некорректная: «подтверждённых mixed».
+**Story:**  
+`main_mixed.csv` — XLM-R v2 predictions, not manual audit. Corpus audit of 100 random mixed from Action Plan not done. Gold test mixed P/R ~**95%** on **n = 461** does not automatically transfer to **16,364** corpus rows. Correct: “filtered 16,364 candidates by LID v2”; incorrect: “confirmed mixed.”
 
-**Доказательство:** badge + сравнение n=461 vs n=16364  
-**Вывод:** Корпус — применение модели; tone — отдельная ветка.
-
----
-
-### Слайд 16 · Act IV · Tone stretch
-
-**Layout:** `evidenceWall` — два числа с подписями задач  
-**Вопрос:** Tone 97,33% — это то же, что LID 96,56%?
-
-**История:**  
-Нет. Tone — отдельная задача на mixed-отзывах 2GIS. Gold **3 529** (pos **1 771**, neg **1 758**); **~94%** меток от LLM-draft (`llm_composer`), manual **217**. Tone v1: **97,33%** на test **n = 525**, CM `[[257,6],[8,254]]`. Метрика отражает согласованность с LLM-разметкой на hold-out, не независимую человеческую валидацию. v2 хуже (**96,19%**), выбран v1.
-
-**Доказательство:** LID 96,56% | Tone 97,33% с подписями eval set  
-**Вывод:** LID — главный результат; tone — stretch goal с оговоркой.
+**Evidence:** badge + comparison n=461 vs n=16364  
+**Therefore:** Corpus is model application; tone is a separate branch.
 
 ---
 
-### Слайд 17 · Act IV · Cascade
+### Slide 16 · Act IV · Tone stretch
 
-**Layout:** `splitScene` — схема pipeline  
-**Вопрос:** Как части связаны в продукте?
+**Layout:** `evidenceWall` — two numbers with task labels  
+**Question:** Is tone 97.33% the same as LID 96.56%?
 
-**История:**  
-Filter-first (`inference/pipeline.py`): сырой text → XLM-R LID v2 (ru|kz|mixed) → auto-route. Ru → RuBERT (pretrained). Kz → Kazakh sentiment BERT (pretrained). Mixed → Tone v1 (XLM-R fine-tuned). Тональность на mixed не смешивается с монолингвальными путями.
+**Story:**  
+No. Tone is a separate task on mixed 2GIS reviews. Gold **3,529** (pos **1,771**, neg **1,758**); **~94%** labels from LLM draft (`llm_composer`), manual **217**. Tone v1: **97.33%** on test **n = 525**, CM `[[257,6],[8,254]]`. Metric reflects agreement with LLM labels on hold-out, not independent human validation. v2 worse (**96.19%**), v1 chosen.
 
-**Доказательство:** схема cascade  
-**Вывод:** Pipeline вышел за рамки ноутбука — demo.
-
----
-
-### Слайд 18 · Act IV · Demo и воспроизведение
-
-**Layout:** `demoTheater` — скриншот/wireframe + команды  
-**Вопрос:** Как проверить без автора проекта?
-
-**История:**  
-`python scripts/setup_demo_models.py` → `python run_demo.py` (http://127.0.0.1:8000/). Labeler: `python run_labeler.py`. Tone-метрики: `python scripts/eval_tone_v1.py` → `metrics_tone_test.json`. `main.ipynb` (270 ячеек) не воспроизводится Run All; defense path — cells **45, 173, 237, 268** + скрипты. Первый запрос API может вернуть 503 на 30–60 с (загрузка ~8,56 GB моделей).
-
-**Доказательство:** блок команд + ссылка на demo UI  
-**Вывод:** Работает локально; limits — на финальном слайде.
+**Evidence:** LID 96.56% | Tone 97.33% with eval set labels  
+**Therefore:** LID is main result; tone is stretch goal with caveat.
 
 ---
 
-### Слайд 19 · Act IV · Ограничения
+### Slide 17 · Act IV · Cascade
+
+**Layout:** `splitScene` — pipeline diagram  
+**Question:** How do parts connect in the product?
+
+**Story:**  
+Filter-first (`inference/pipeline.py`): raw text → XLM-R LID v2 (ru|kz|mixed) → auto-route. Ru → RuBERT (pretrained). Kz → Kazakh sentiment BERT (pretrained). Mixed → Tone v1 (XLM-R fine-tuned). Mixed tone does not mix with monolingual paths.
+
+**Evidence:** cascade diagram  
+**Therefore:** Pipeline left the notebook — demo.
+
+---
+
+### Slide 18 · Act IV · Demo and reproduction
+
+**Layout:** `demoTheater` — screenshot/wireframe + commands  
+**Question:** How to verify without the author?
+
+**Story:**  
+`python scripts/setup_demo_models.py` → `python run_demo.py` (http://127.0.0.1:8000/). Labeler: `python run_labeler.py`. Tone metrics: `python scripts/eval_tone_v1.py` → `metrics_tone_test.json`. `main.ipynb` (270 cells) does not replay Run All; defense path — cells **45, 173, 237, 268** + scripts. First API request may return 503 for 30–60 s (~8.56 GB model load).
+
+**Evidence:** command block + demo UI link  
+**Therefore:** Runs locally; limits on final slide.
+
+---
+
+### Slide 19 · Act IV · Limits
 
 **Layout:** `editorialStack`  
-**Вопрос:** Где границы проекта?
+**Question:** Where are the project boundaries?
 
-**История:**  
-Один разметчик gold LID; κ не считали. Tone и LID на разных доменах (Telegram/Kaspi vs 2GIS). **16 364** mixed не аудированы на корпусе. Tone 97,33% — в основном LLM-label agreement. Telethon cells **31, 35, 41, 88** в ноутбуке нельзя перезапускать. Student-scale исследование с явно названными limits — не production NLP.
+**Story:**  
+Single gold LID annotator; κ not computed. Tone and LID on different domains (Telegram/Kaspi vs 2GIS). **16,364** mixed not corpus-audited. Tone 97.33% is mostly LLM-label agreement. Telethon cells **31, 35, 41, 88** in notebook must not be re-run. Student-scale research with explicit limits — not production NLP.
 
-**Доказательство:** четыре пункта limits (prose, не bullets-only)  
-**Вывод:** Итог с тремя опорными числами.
+**Evidence:** four limit points (prose, not bullets-only)  
+**Therefore:** Conclusion with three anchor numbers.
 
 ---
 
-### Слайд 20 · Act IV · Закрытие
+### Slide 20 · Act IV · Closing
 
 **Layout:** `manifesto`  
-**Вопрос:** Главный итог проекта?
+**Question:** Main project takeaway?
 
-**История:**  
-Проект начался с «почему все пишут mixed». Ответ — в измерении шума и gold **3 076**, не в очередной архитектуре ради архитектуры. До: auto-LID → аналитика и модели на шуме. После: filter-first pipeline с XLM-R v2 **96,56%** на честном test и локальным demo.
+**Story:**  
+Project started with “why does everyone write mixed.” Answer was measuring noise and gold **3,076**, not another architecture for its own sake. Before: auto-LID → analytics and models on noise. After: filter-first pipeline with XLM-R v2 **96.56%** on honest test and local demo.
 
-**Доказательство (три якоря):**  
-- **~1,66% / 2,32%** — диагностика шума (эвристика, не prevalence)  
-- **96,56%** — LID macro-F1, gold test n=461  
-- **97,33%** — tone на mixed 2GIS, n=525, LLM-heavy gold  
+**Evidence (three anchors):**  
+- **~1.66% / 2.32%** — noise diagnostics (heuristic, not prevalence)  
+- **96.56%** — LID macro-F1, gold test n=461  
+- **97.33%** — tone on mixed 2GIS, n=525, LLM-heavy gold  
 
-**Вывод:** `STORY.md` · `main.ipynb` · `run_demo.py`
+**Therefore:** `STORY.md` · `main.ipynb` · `run_demo.py`
 
 ---
 
-## Appendix (опционально, не в основной 20)
+## Appendix (optional, not in main 20)
 
-| Слайд | Содержание |
+| Slide | Content |
 |-------|------------|
-| A1 | Таблица всех источников данных (422k / 39k / 2GIS / gold) |
-| A2 | CRISP-DM timeline 4 недели |
-| A3 | Скриншот labeler UI |
-| A4 | Полная таблица источников из STORY.md §Источники данных |
+| A1 | Table of all data sources (422k / 39k / 2GIS / gold) |
+| A2 | CRISP-DM timeline 4 weeks |
+| A3 | Labeler UI screenshot |
+| A4 | Full source table from STORY.md §Data sources |
 
 ---
 
-## Маппинг слайд → STORY.md → main.ipynb
+## Slide → STORY.md → main.ipynb mapping
 
-| Слайд | STORY.md | main.ipynb |
+| Slide | STORY.md | main.ipynb |
 |-------|----------|------------|
-| 01–05 | Часть I | — |
-| 06 | Глава 1 | cells 0–21 |
-| 07 | Глава 2 | cells 22–44 |
-| 08 | Главы 3–4 | cells 45–113 |
-| 09 | До/после/путь | — |
-| 10–11 | Глава 5 | cells 114–153 |
-| 12–13 | Глава 6, §10 | cells 154–176, 267–268 |
-| 14–15 | Глава 7 | cells 177–237 |
-| 16 | Глава 8 | cells 238–264 |
-| 17–18 | Глава 9 | inference/ |
-| 19–20 | Часть III | — |
+| 01–05 | Part I | — |
+| 06 | Chapter 1 | cells 0–21 |
+| 07 | Chapter 2 | cells 22–44 |
+| 08 | Chapters 3–4 | cells 45–113 |
+| 09 | Before/after/path | — |
+| 10–11 | Chapter 5 | cells 114–153 |
+| 12–13 | Chapter 6, §10 | cells 154–176, 267–268 |
+| 14–15 | Chapter 7 | cells 177–237 |
+| 16 | Chapter 8 | cells 238–264 |
+| 17–18 | Chapter 9 | inference/ |
+| 19–20 | Part III | — |
 
 ---
 
-## Чеклист перед вёрсткой HTML
+## Pre-layout checklist
 
-- [ ] Каждый слайд читается без устных пояснений (есть Therefore)
-- [ ] Все числа сверены с `STORY.md` / disk
-- [ ] Нет story guard violations
-- [ ] Chapter rail на всех 20 слайдах
-- [ ] Не менее 5 layout families (не card-grid монотония)
-- [ ] Слайды 05 и 13 — визуальный акцент (peak)
-- [ ] Слайд 15 обязателен (qualifier 16k)
+- [ ] Each slide reads without spoken explanation (has Therefore)
+- [ ] All numbers cross-checked with `STORY.md` / disk
+- [ ] No story guard violations
+- [ ] Chapter rail on all 20 slides
+- [ ] At least 5 layout families (no card-grid monotony)
+- [ ] Slides 05 and 13 — visual peak
+- [ ] Slide 15 required (qualifier 16k)
 
 ---
 
-*Связанные файлы: `STORY.md` · `docs/capstone/presentation.pptx` · `web/story.html` · `docs/capstone/kaznlp-story-deck-self.html` (опционально)*
+*Related files: `STORY.md` · `docs/capstone/presentation.pptx` · `web/story.html` · `docs/capstone/kaznlp-story-deck-self.html` (optional)*

@@ -52,7 +52,7 @@
 | Label errors | Manual audit + 2GIS rating cross-check; fixes in `tone_mixed_balanced_audited.csv` |
 | Weak mixed / domains / length | **~20% synthetic in train** — 8 targeted batches (`scripts/generate_tone_synthetic.py`) |
 | Gold↔synth duplicates | `scripts/merge_tone_synthetic.py` — `normalize_text` + dedup against gold |
-| QC (pure RU/KZ, weak bilingual) | `labeling_service/text_heuristics.py` + `scripts/merge_synthetic.qc_row` в `merge_tone_synthetic.py` |
+| QC (pure RU/KZ, weak bilingual) | `labeling_service/text_heuristics.py` + `scripts/merge_synthetic.qc_row` in `merge_tone_synthetic.py` |
 | Label contamination in synth | `label_contamination()`, salt only with neutral context (city/time/price) |
 | Source transparency | `label_source` column: `llm_composer` / `manual` / `synthetic` |
 

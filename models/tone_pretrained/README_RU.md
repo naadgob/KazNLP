@@ -1,11 +1,11 @@
-> **Russian version:** [README_RU.md](README_RU.md)
+> **English version:** [README.md](README.md)
 
 # Pretrained tone models (RU / KZ)
 
-Two open-source models for monolingual routing. Mixed tone is separate (`models/xlm-roberta/tone_v1.pt`, duplicate in `tone/tone_v1.pt`).
+Две open-source модели для monolingual routing. Mixed tone — отдельно (`models/xlm-roberta/tone_v1.pt`, дубликат в `tone/tone_v1.pt`).
 
-| Folder | Model | Classes |
-|--------|-------|---------|
+| Папка | Модель | Классы |
+|-------|--------|--------|
 | `ru_rubert_rureviews/` | [sismetanin/rubert_conversational-ru-sentiment-rureviews](https://huggingface.co/sismetanin/rubert_conversational-ru-sentiment-rureviews) | neutral · negative · positive |
 | `kz_kazakh_sentiment_bert/` | [R3iwan/kazakh-sentiment-bert](https://huggingface.co/R3iwan/kazakh-sentiment-bert) | negative · neutral · positive |
 
@@ -13,7 +13,7 @@ Two open-source models for monolingual routing. Mixed tone is separate (`models/
 
 **KZ labels:** `negative` · `neutral` · `positive`
 
-For binary API output: pos/neg directly; neutral → argmax(pos, neg) or a separate status.
+Для бинарного API: pos/neg напрямую; neutral — argmax(pos, neg) или отдельный статус.
 
 ```bash
 python scripts/download_tone_pretrained.py
