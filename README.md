@@ -169,7 +169,7 @@ Live defense narrative: [`web/story.html`](web/story.html) (does not replace `pr
 | XLM-R LID v2 | `models/xlm-roberta/xlm-r_v2.pt` |
 | Master corpus | `data/processed/main.csv`, `main_mixed.csv` |
 
-Baseline ladder on one shared test (n=461): §10 (cells 265–273) — FastText → HeLI raw/neutral/windows-grid → Lingua → XLM-R.
+Baseline ladder on one shared test (n=461): §10 (cells 265–275) — FastText → HeLI raw/neutral/windows-grid → char-3gram NB → Lingua → XLM-R.
 
 ### 2. Mixed tone (`main.ipynb`, chapter 8)
 

@@ -46,6 +46,7 @@
 | FastText v1 synthetic | F1 **84.96%** | `main.ipynb` гл.1 |
 | FastText v2 seeds | P(mixed) **95.51%**, n=868 | `main.ipynb` гл.4 |
 | HeLI raw / neutral / windows (best) | **69.73%** / **68.26%** / **86.92%** macro-F1, n=461; flip 69/80 | `main.ipynb` §10.3–10.3.1 |
+| Char-3gram NB (char 3-gram + Laplace) | **88.00%** macro-F1, n=461; R(mixed) 70.81%, P(mixed) 94.21% | `main.ipynb` §10.2 |
 | Mixed Tone v1 | acc **97.33%**, CM `[[257,6],[8,254]]` | `scripts/eval_tone_v1.py` · §7.3 |
 | Mixed Tone v2 | acc **96.19%** | `scripts/eval_tone_v1.py` |
 

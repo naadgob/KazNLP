@@ -27,7 +27,7 @@
 |------|------------|
 | **Проблема** | Автоматический LID в KZ соцмедиа даёт массовые ложные «mixed» |
 | **Цель** | Высокоточный фильтр **ru / kz / mixed** + тональность для подтверждённого mixed |
-| **Baseline** | FastText v1/v2, эвристики, Lingua v1/v2 |
+| **Baseline** | FastText v1/v2, эвристики, Lingua v1/v2, HeLI/heliport, char-3gram NB |
 | **Основная модель** | XLM-RoBERTa-base (LID v2 + Mixed Tone v1) |
 | **Метрики** | macro-F1, per-class P/R, confusion matrix; tone — accuracy + CM |
 | **Успех** | Gold LID ≥3k, XLM-R > baselines на gold test, demo + labeler + отчёт |
@@ -284,6 +284,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 | HeLI raw (heliport) | 70.28% | 69.73% | 53.42% | 58.90% |
 | HeLI+neutral (strip loanwords → re-ID) | 68.98% | 68.26% | 49.07% | 57.25% |
 | HeLI+windows (grid best: окна 2+3, min_count=1) | 87.20% | **86.92%** | 68.94% | 92.50% |
+| Char-3gram NB (§10.2, char 3-gram + Laplace) | 88.29% | **88.00%** | 70.81% | 94.21% |
 | Lingua v1 | 84.60% | 84.96% | 86.34% | 73.94% |
 | Lingua v2 | 88.94% | 88.63% | 98.76% | 76.81% |
 | XLM-R LID v1 | 95.88% | 95.92% | — | — |
@@ -299,7 +300,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 
 Per-class v2: ru P=0.987 R=1.000; kz P=0.960 R=0.947; mixed P=0.950 R=0.950.
 
-**Вывод:** XLM-R v2 — единственная модель с balanced mixed P/R ~95% на gold; Lingua v2 имеет высокий recall mixed (98.8%) но низкий precision (76.8%) — непригодна для corpus filter без ручной проверки. HeLI raw/neutral рядом с FastText (~70% macro-F1); один только strip заимствований не помог, но **HeLI+windows** после короткого grid (best: окна **2+3**, `min_count=1`; ничья с 2+3+4) даёт **86.92%** macro-F1 и переводит **69/80** residual mixed-as-rus в `mixed` при high precision mixed (92.5%).
+**Вывод:** XLM-R v2 — единственная модель с balanced mixed P/R ~95% на gold; Lingua v2 имеет высокий recall mixed (98.8%) но низкий precision (76.8%) — непригодна для corpus filter без ручной проверки. HeLI raw/neutral рядом с FastText (~70% macro-F1); один только strip заимствований не помог, но **HeLI+windows** после короткого grid (best: окна **2+3**, `min_count=1`; ничья с 2+3+4) даёт **86.92%** macro-F1 и переводит **69/80** residual mixed-as-rus в `mixed` при high precision mixed (92.5%). Сглаженный char-триграм NB (§10.2), добавлен по замечанию рецензентов об общей кириллице у kk и ru, даёт **88.00%** macro-F1 и почти идеальную точность на моно-текстах, но ловит лишь **70.8%** настоящего mixed; посимвольная статистика различает языки, но не берёт границу «заимствование vs переключение», которую закрывает XLM-R. Более тяжёлый char 2–4 TF-IDF + LinearSVC оказался ниже (81.1%), поэтому за character baseline отвечает именно триграм NB.
 
 #### 3.3.3 Mixed Tone v1
 

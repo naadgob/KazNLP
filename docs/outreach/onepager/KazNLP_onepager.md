@@ -21,10 +21,11 @@ A document-level LID setup that treats *mixed* as its own class and gets scored 
 | HeLI raw (heliport) | 69.7% | 53.4% | 58.9% |
 | HeLI+neutral (strip loanwords → re-ID) | 68.3% | 49.1% | 57.3% |
 | HeLI+windows (grid best: 2+3, min1) | 86.9% | 68.9% | 92.5% |
+| Char-3gram NB (char 3-gram + Laplace) | 88.0% | 70.8% | 94.2% |
 | Lingua v2 (token voting) | 88.6% | 98.8% | 76.8% |
 | **XLM-R v2 (fine-tuned filter)** | **96.6%** | **95.0%** | **95.0%** |
 
-> Synthetic data doesn't transfer: a FastText model trained on 480,000 generated "mixed" lines scores **85% F1 on its own synthetic test** but drops to **63% macro-F1 on the real gold set**. Lingua reaches high recall by over-tagging mixed (precision 76.8%). HeLI raw sits with FastText; **HeLI+windows** (grid best: overlapping 2+3-word votes after strip, min_count=1) jumps to **86.9%** macro-F1 with high mixed precision.
+> Synthetic data doesn't transfer: a FastText model trained on 480,000 generated "mixed" lines scores **85% F1 on its own synthetic test** but drops to **63% macro-F1 on the real gold set**. Lingua reaches high recall by over-tagging mixed (precision 76.8%). HeLI raw sits with FastText; **HeLI+windows** (grid best: overlapping 2+3-word votes after strip, min_count=1) jumps to **86.9%** macro-F1 with high mixed precision. A smoothed char-trigram NB (reviewers asked for it because kk and ru share Cyrillic) edges a touch higher at **88.0%** but recovers only 70.8% of true mixed, so the switch boundary still needs sentence context.
 
 ## At corpus scale
 

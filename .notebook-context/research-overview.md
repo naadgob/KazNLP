@@ -8,7 +8,7 @@ Per-notebook deep dive lives in `.notebook-context/main.md`.
 
 Solo Samsung Innovation Campus capstone. Core claim: auto LID on Kazakhstani social/reviews massively over-labels “mixed”; real code-switching (шала-казахский) must be separated from Kazakh with Russian loanwords before sentiment or corpus stats make sense.
 
-Pipeline: collect → diagnose false mixed → gold LID 3,076 → baselines (FastText, Lingua, HeLI raw/neutral/windows-grid) → XLM-R LID v2 → score corpus → tone on code-switched slice → demo API.
+Pipeline: collect → diagnose false mixed → gold LID 3,076 → baselines (FastText, Lingua, HeLI raw/neutral/windows-grid, char-3gram NB) → XLM-R LID v2 → score corpus → tone on code-switched slice → demo API.
 
 ## Key numbers
 
@@ -18,7 +18,8 @@ Pipeline: collect → diagnose false mixed → gold LID 3,076 → baselines (Fas
 | Kaspi+Telegram merged / dedup / cleaned | 461,270 / 388,748 / 254,601 |
 | Gold LID | 3,076 (mixed 1077 / ru 1000 / kz 999); split 2691/461/462 |
 | XLM-R LID v2 macro-F1 (test n=461) | 96.56% (acc 96.53%) |
-| FastText v2 / HeLI raw / HeLI+windows / Lingua v2 | 70.92% / 69.73% / 86.92% / 88.63% macro-F1 |
+| FastText v2 / HeLI+windows / Char-3gram NB / Lingua v2 | 70.92% / 86.92% / 88.00% / 88.63% macro-F1 |
+| Char-3gram NB (§10.2, char 3-gram + Laplace NB) | 88.00% macro-F1; mixed recall 0.708 (misses switch boundary) |
 | HeLI+neutral / HeLI+windows (grid best 2+3, min1) | 68.26% / 86.92% macro-F1; best windows flips 69/80 residual mixed-as-rus |
 | Heuristic over-labeling | 27,628 tagged mixed, 460 real (~1.7%) |
 | Master corpus after LID | 331,468 (ru 281409 / kz 33695 / mixed 16364) |

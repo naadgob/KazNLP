@@ -27,7 +27,7 @@ Kazakhstani NLP has historically mixed **monolingual Kazakh with loans** and **r
 |------|------------|
 | **Problem** | Automatic LID in KZ social media produces mass false “mixed” |
 | **Goal** | High-precision **ru / kz / mixed** filter + tone for confirmed mixed |
-| **Baseline** | FastText v1/v2, heuristics, Lingua v1/v2 |
+| **Baseline** | FastText v1/v2, heuristics, Lingua v1/v2, HeLI/heliport, char-3gram NB |
 | **Main model** | XLM-RoBERTa-base (LID v2 + Mixed Tone v1) |
 | **Metrics** | macro-F1, per-class P/R, confusion matrix; tone — accuracy + CM |
 | **Success** | Gold LID ≥3k, XLM-R > baselines on gold test, demo + labeler + report |
@@ -284,6 +284,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 | HeLI raw (heliport) | 70.28% | 69.73% | 53.42% | 58.90% |
 | HeLI+neutral (strip loanwords → re-ID) | 68.98% | 68.26% | 49.07% | 57.25% |
 | HeLI+windows (grid best: 2+3-word votes, min_count=1) | 87.20% | **86.92%** | 68.94% | 92.50% |
+| Char-3gram NB (§10.2, char 3-gram + Laplace) | 88.29% | **88.00%** | 70.81% | 94.21% |
 | Lingua v1 | 84.60% | 84.96% | 86.34% | 73.94% |
 | Lingua v2 | 88.94% | 88.63% | 98.76% | 76.81% |
 | XLM-R LID v1 | 95.88% | 95.92% | — | — |
@@ -299,7 +300,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 
 Per-class v2: ru P=0.987 R=1.000; kz P=0.960 R=0.947; mixed P=0.950 R=0.950.
 
-**Conclusion:** XLM-R v2 is the only model with balanced mixed P/R ~95% on gold; Lingua v2 has high mixed recall (98.8%) but low precision (76.8%) — unsuitable for corpus filter without manual review. HeLI raw/neutral sit near FastText (~70% macro-F1); Tommi-style loanword strip alone did not help, but **HeLI+windows** after a short grid (best: overlapping **2+3**-word heliport votes, `min_count=1`; tied with 2+3+4) reaches **86.92%** macro-F1 and flips **69/80** of the residual mixed-as-rus bucket to `mixed`, with high mixed precision (92.5%).
+**Conclusion:** XLM-R v2 is the only model with balanced mixed P/R ~95% on gold; Lingua v2 has high mixed recall (98.8%) but low precision (76.8%) — unsuitable for corpus filter without manual review. HeLI raw/neutral sit near FastText (~70% macro-F1); Tommi-style loanword strip alone did not help, but **HeLI+windows** after a short grid (best: overlapping **2+3**-word heliport votes, `min_count=1`; tied with 2+3+4) reaches **86.92%** macro-F1 and flips **69/80** of the residual mixed-as-rus bucket to `mixed`, with high mixed precision (92.5%). A smoothed character-trigram NB (§10.2), added because reviewers pointed out that kk and ru share Cyrillic, reaches **88.00%** macro-F1 with near-perfect monolingual accuracy, yet it recovers only **70.8%** of true mixed; character statistics tell the two languages apart but miss the borrowing-vs-switch line that XLM-R gets. A heavier char 2–4 TF-IDF + LinearSVC scored lower (81.1%), so the trigram NB stands in as the character baseline.
 
 #### 3.3.3 Mixed Tone v1
 

@@ -230,7 +230,7 @@ XLM-RoBERTa-base, Kaggle 2× T4, AdamW lr 2e-5. v1: **95.92%** macro-F1; **v2: 9
 **Question:** Why not stop at FastText or Lingua?
 
 **Story:**  
-§10 `main.ipynb` (cells 265–273): all LID models on one `test.csv` (**n = 461**). FastText v1 **63.24%** → v2 **70.92%** → HeLI raw **69.73%** → HeLI+windows **86.92%** → Lingua v2 **88.63%** → XLM-R v2 **96.56%** macro-F1. Only XLM-R v2 gives balanced mixed P/R ~**95%**. Lingua v2 catches almost all mixed (recall 98.76%) but precision 76.81%. HeLI+windows (Tommi’s overlapping **2+3**-word votes after loanword strip; grid best on n=461) is the strong non-neural rung; **69/80** residual mixed-as-rus flip to `mixed`.
+§10 `main.ipynb` (cells 265–273): all LID models on one `test.csv` (**n = 461**). FastText v1 **63.24%** → v2 **70.92%** → HeLI raw **69.73%** → HeLI+windows **86.92%** → Char-3gram NB **88.00%** → Lingua v2 **88.63%** → XLM-R v2 **96.56%** macro-F1. Only XLM-R v2 gives balanced mixed P/R ~**95%**. Lingua v2 catches almost all mixed (recall 98.76%) but precision 76.81%. HeLI+windows (Tommi’s overlapping **2+3**-word votes after loanword strip; grid best on n=461) is the strong non-neural rung; **69/80** residual mixed-as-rus flip to `mixed`. A smoothed char-trigram NB edges just above it at **88.00%**, but recovers only **70.8%** of true mixed.
 
 **Evidence:** ladder bars + footnote “one test.csv”  
 **Therefore:** Main scientific result is LID; apply to corpus.

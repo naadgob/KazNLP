@@ -96,7 +96,7 @@ AFTER:  filter-first cascade, 331k with LID v2 labels
 
 - Gold LID **3,076**; val/test gold-only; synthetic train-only.
 - XLM-R LID v2: **96.56%** macro-F1; mixed P/R ~**95%** on test **n = 461**.
-- Baseline ladder: FT v2 **70.92%** → HeLI raw **69.73%** → HeLI+windows **86.92%** → Lingua v2 **88.63%** → XLM-R **96.56%**.
+- Baseline ladder: FT v2 **70.92%** → HeLI raw **69.73%** → HeLI+windows **86.92%** → Char-3gram NB **88.00%** → Lingua v2 **88.63%** → XLM-R **96.56%**.
 - `main.csv` **331,468** rows; **16,364** model-predicted mixed (not human-audited).
 - Tone v1: **97.33%** on test **n = 525** (see LLM-label caveat below).
 - Cascade TEXT → LID → route → tone; demo and labeler run locally.
@@ -189,11 +189,12 @@ Confusion matrix v2 (rows = true, cols = pred):
 | HeLI raw (heliport) | 69.73% |
 | HeLI+neutral | 68.26% |
 | HeLI+windows (grid best 2+3, min1) | 86.92% |
+| Char-3gram NB (char 3-gram + Laplace) | 88.00% |
 | Lingua v1 | 84.96% |
 | Lingua v2 | 88.63% |
 | **XLM-R v2** | **96.56%** |
 
-Only XLM-R v2 gives balanced mixed P/R ~**95%** on hold-out. That is the main capstone scientific result. HeLI raw/neutral land next to FastText; **HeLI+windows** (grid best: **2+3**-word votes, min_count=1) reaches **86.92%** and flips **69/80** residual mixed-as-rus docs to `mixed`.
+Only XLM-R v2 gives balanced mixed P/R ~**95%** on hold-out. That is the main capstone scientific result. HeLI raw/neutral land next to FastText; **HeLI+windows** (grid best: **2+3**-word votes, min_count=1) reaches **86.92%** and flips **69/80** residual mixed-as-rus docs to `mixed`. A smoothed char-trigram NB (§10.2) lands at **88.00%**, just over HeLI+windows, but recovers only **70.8%** of true mixed: character signal tells ru from kz, not a loanword from a switch.
 
 ## Chapter 7. Corpus application (cells 177–237)
 
@@ -286,7 +287,7 @@ The project started with “why does everyone write mixed.” The answer was mea
 | Gold LID 3,076 | `main.ipynb` cell 144, `gold_v1.csv` | ✅ |
 | LID test 461 | `data/training/filter/v1/test.csv` | ✅ |
 | XLM-R v2 96.56% | cells 173, 268 | ✅ |
-| Ladder FT/HeLI/Lingua/XLM-R | §10, n = 461 | ✅ |
+| Ladder FT/HeLI/char-3gram/Lingua/XLM-R | §10, n = 461 | ✅ |
 | main.csv 331,468 | cell 237, disk | ✅ |
 | main_mixed 16,364 | cell 237, model-predicted | ✅ + caveat |
 | Tone v1 97.33% n = 525 | cell 255, `metrics_tone_test.json` | ✅ |

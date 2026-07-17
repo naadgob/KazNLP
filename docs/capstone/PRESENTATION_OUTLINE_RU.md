@@ -230,7 +230,7 @@ XLM-RoBERTa-base, Kaggle 2× T4, AdamW lr 2e-5. v1: **95,92%** macro-F1; **v2: 9
 **Вопрос:** Почему не остановились на FastText или Lingua?
 
 **История:**  
-§10 `main.ipynb` (cells 265–273): все LID-модели на одном `test.csv` (**n = 461**). FastText v1 **63,24%** → v2 **70,92%** → HeLI raw **69,73%** → HeLI+windows **86,92%** → Lingua v2 **88,63%** → XLM-R v2 **96,56%** macro-F1. Только XLM-R v2 даёт balanced mixed P/R ~**95%**. Lingua v2 ловит почти все mixed (recall 98,76%), но precision 76,81%. HeLI+windows (перекрывающиеся окна **2+3** после strip; best по grid на n=461) — сильная не-нейронная ступень; **69/80** residual mixed-as-rus → `mixed`.
+§10 `main.ipynb` (cells 265–273): все LID-модели на одном `test.csv` (**n = 461**). FastText v1 **63,24%** → v2 **70,92%** → HeLI raw **69,73%** → HeLI+windows **86,92%** → Char-3gram NB **88,00%** → Lingua v2 **88,63%** → XLM-R v2 **96,56%** macro-F1. Только XLM-R v2 даёт balanced mixed P/R ~**95%**. Lingua v2 ловит почти все mixed (recall 98,76%), но precision 76,81%. HeLI+windows (перекрывающиеся окна **2+3** после strip; best по grid на n=461) — сильная не-нейронная ступень; **69/80** residual mixed-as-rus → `mixed`. Сглаженный char-триграм NB чуть выше — **88,00%**, но ловит лишь **70,8%** настоящего mixed.
 
 **Доказательство:** ladder bars + footnote «один test.csv»  
 **Вывод:** Главный научный результат — LID; применяем к корпусу.

@@ -26,7 +26,7 @@ Data flow: HF Kazakh/Russian corpora + scraped Telegram/Kaspi/2GIS → synthetic
 - 178–187 (§7): run XLM-R over kaspi-telegram corpus
 - 188–237 (§8 2GIS): scrape negatives (41,972) + positives (46,865+13,417); build final `main.csv` → **331,468 rows** (ru 281,409 / kz 33,695 / mixed 16,364)
 - 238–264 (§9 tone): tone gold audited 3,503 + synthetic 882; split 3,334/525/526; XLM-R tone v1 & v2
-- 265–273 (§10): head-to-head LID comparison on gold test (n=461), including HeLI raw/neutral (§10.3) and HeLI+windows (§10.3.1)
+- 265–275 (§10): head-to-head LID comparison on gold test (n=461): §10.1 FastText/Lingua, **§10.2 char-trigram NB** (added 2026-07-17), §10.3 HeLI raw/neutral, §10.3.1 HeLI+windows, Block 2 aggregation (cell 274) + §10.4 tables (cell 275)
 
 ## Findings & results (authoritative numbers)
 
@@ -39,12 +39,15 @@ Data flow: HF Kazakh/Russian corpora + scraped Telegram/Kaspi/2GIS → synthetic
 | HeLI raw (heliport) | 0.7028 | 0.6973 | 0.5342 | 0.5890 |
 | HeLI+neutral | 0.6898 | 0.6826 | 0.4907 | 0.5725 |
 | HeLI+windows (best 2+3, min1) | 0.8720 | 0.8692 | 0.6894 | 0.9250 |
+| Char-3gram NB (§10.2, char 3-gram + Laplace) | 0.8829 | 0.8800 | 0.7081 | 0.9421 |
 | Lingua v1 | 0.8460 | 0.8496 | 0.8634 | 0.7394 |
 | Lingua v2 | 0.8894 | 0.8863 | **0.9876** | 0.7681 |
 | XLM-R v1 | 0.9588 | 0.9592 | 0.9441 | 0.9383 |
 | **XLM-R v2** | **0.9653** | **0.9656** | 0.9503 | 0.9503 |
 
 Best model = XLM-R v2: macro-F1 96.56%, acc 96.53%. Lingua v2 has the highest mixed recall (98.76%) but low precision (76.81%) — over-tags mixed. HeLI+windows grid best = sizes **(2,3)** min_count=1 → 86.92% macro-F1 (69/80 residual flip); tied with 2+3+4 etc.; raw/neutral stay ~0.70 next to FastText.
+
+**Char-3gram NB** (§10.2, added 2026-07-17): char 3-gram CountVectorizer + Laplace-smoothed (alpha=1) MultinomialNB, trained on same `train.csv`, scored on same gold test → macro-F1 **88.00%** (acc 88.29%). Strongest simple character baseline (near-perfect monolingual: ru recall 0.973, kz 0.980; mixed precision 0.942) but mixed recall only **0.708** (47/161 true mixed read as monolingual) — sub-word signal separates the two languages yet misses the borrowing-vs-switch boundary that XLM-R closes. A heavier char 2–4 TF-IDF + LinearSVC scored lower (0.811). Reviewer-requested (kk/ru share Cyrillic).
 
 ### The over-labeling evidence (the paper's hook)
 

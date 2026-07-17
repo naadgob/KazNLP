@@ -96,7 +96,7 @@
 
 - Gold LID **3 076**; val/test только gold; synthetic только в train.
 - XLM-R LID v2: **96,56%** macro-F1; mixed P/R ~**95%** на test **n = 461**.
-- Baseline ladder: FT v2 **70,92%** → HeLI raw **69,73%** → HeLI+windows **86,92%** → Lingua v2 **88,63%** → XLM-R **96,56%**.
+- Baseline ladder: FT v2 **70,92%** → HeLI raw **69,73%** → HeLI+windows **86,92%** → Char-3gram NB **88,00%** → Lingua v2 **88,63%** → XLM-R **96,56%**.
 - `main.csv` **331 468** строк; **16 364** model-predicted mixed (не human-audited).
 - Tone v1: **97,33%** на test **n = 525** (см. оговорку про LLM-labels ниже).
 - Cascade TEXT → LID → route → tone; demo и labeler работают локально.
@@ -189,11 +189,12 @@ Confusion matrix v2 (rows = true, cols = pred):
 | HeLI raw (heliport) | 69,73% |
 | HeLI+neutral | 68,26% |
 | HeLI+windows (grid best 2+3, min1) | 86,92% |
+| Char-3gram NB (char 3-gram + Laplace) | 88,00% |
 | Lingua v1 | 84,96% |
 | Lingua v2 | 88,63% |
 | **XLM-R v2** | **96,56%** |
 
-Только XLM-R v2 даёт balanced mixed P/R ~**95%** на hold-out. Это главный научный результат capstone. HeLI raw/neutral рядом с FastText; **HeLI+windows** (grid best: окна **2+3**, min_count=1) даёт **86,92%** и переводит **69/80** residual mixed-as-rus в `mixed`.
+Только XLM-R v2 даёт balanced mixed P/R ~**95%** на hold-out. Это главный научный результат capstone. HeLI raw/neutral рядом с FastText; **HeLI+windows** (grid best: окна **2+3**, min_count=1) даёт **86,92%** и переводит **69/80** residual mixed-as-rus в `mixed`. Сглаженный char-триграм NB (§10.2) даёт **88,00%**, чуть выше HeLI+windows, но ловит лишь **70,8%** настоящего mixed: посимвольный сигнал отличает ru от kz, но не заимствование от переключения.
 
 ## Глава 7. Применение к корпусу (cells 177–237)
 
