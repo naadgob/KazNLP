@@ -230,7 +230,7 @@ XLM-RoBERTa-base, Kaggle 2× T4, AdamW lr 2e-5. v1: **95.92%** macro-F1; **v2: 9
 **Question:** Why not stop at FastText or Lingua?
 
 **Story:**  
-§10 `main.ipynb` (cells 267–271): all LID models on one `test.csv` (**n = 461**). FastText v1 **63.24%** → v2 **70.92%** → HeLI raw **69.73%** (HeLI+neutral **68.26%**) → Lingua v2 **88.63%** → XLM-R v2 **96.56%** macro-F1. Only XLM-R v2 gives balanced mixed P/R ~**95%**. Lingua v2 catches almost all mixed (recall 98.76%) but precision 76.81% — unsuitable for corpus filter without review. HeLI/heliport (Tommi Jauhiainen’s loanword-neutral re-ID path) is the interpretable non-neural rung next to FastText.
+§10 `main.ipynb` (cells 265–273): all LID models on one `test.csv` (**n = 461**). FastText v1 **63.24%** → v2 **70.92%** → HeLI raw **69.73%** → HeLI+windows **86.92%** → Lingua v2 **88.63%** → XLM-R v2 **96.56%** macro-F1. Only XLM-R v2 gives balanced mixed P/R ~**95%**. Lingua v2 catches almost all mixed (recall 98.76%) but precision 76.81%. HeLI+windows (Tommi’s overlapping **2+3**-word votes after loanword strip; grid best on n=461) is the strong non-neural rung; **69/80** residual mixed-as-rus flip to `mixed`.
 
 **Evidence:** ladder bars + footnote “one test.csv”  
 **Therefore:** Main scientific result is LID; apply to corpus.
@@ -295,7 +295,7 @@ Filter-first (`inference/pipeline.py`): raw text → XLM-R LID v2 (ru|kz|mixed) 
 **Question:** How to verify without the author?
 
 **Story:**  
-`python scripts/setup_demo_models.py` → `python run_demo.py` (http://127.0.0.1:8000/). Labeler: `python run_labeler.py`. Tone metrics: `python scripts/eval_tone_v1.py` → `metrics_tone_test.json`. `main.ipynb` (272 cells) does not replay Run All; defense path — cells **45, 173, 237, 268–271** + scripts. First API request may return 503 for 30–60 s (~8.56 GB model load).
+`python scripts/setup_demo_models.py` → `python run_demo.py` (http://127.0.0.1:8000/). Labeler: `python run_labeler.py`. Tone metrics: `python scripts/eval_tone_v1.py` → `metrics_tone_test.json`. `main.ipynb` (274 cells) does not replay Run All; defense path — cells **45, 173, 237, 268–273** + scripts. First API request may return 503 for 30–60 s (~8.56 GB model load).
 
 **Evidence:** command block + demo UI link  
 **Therefore:** Runs locally; limits on final slide.

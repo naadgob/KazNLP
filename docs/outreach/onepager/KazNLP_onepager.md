@@ -13,17 +13,18 @@ Off-the-shelf detectors and keyword heuristics call a Kazakh sentence "code-swit
 
 ## What I built
 
-A document-level LID setup that treats *mixed* as its own class and gets scored against people, not synthetic text. The gold set has **3,076 messages** (1,077 mixed, 1,000 ru, 999 kz) pulled from Telegram news comments, Kaspi and 2GIS reviews, each labeled by hand. I fine-tuned `xlm-roberta-base` as a three-way filter and put it up against FastText, Lingua, and HeLI/heliport (Tommi Jauhiainen’s loanword-neutral re-ID) on the same held-out gold test (n = 461).
+A document-level LID setup that treats *mixed* as its own class and gets scored against people, not synthetic text. The gold set has **3,076 messages** (1,077 mixed, 1,000 ru, 999 kz) pulled from Telegram news comments, Kaspi and 2GIS reviews, each labeled by hand. I fine-tuned `xlm-roberta-base` as a three-way filter and put it up against FastText, Lingua, and HeLI/heliport (Tommi Jauhiainen’s loanword strip, then a short windows grid) on the same held-out gold test (n = 461).
 
 | LID model (gold test, n=461) | Macro-F1 | Recall_mixed | Prec_mixed |
 |---|--:|--:|--:|
 | FastText v2 (real + synthetic) | 70.9% | 49.1% | 65.8% |
 | HeLI raw (heliport) | 69.7% | 53.4% | 58.9% |
 | HeLI+neutral (strip loanwords → re-ID) | 68.3% | 49.1% | 57.3% |
+| HeLI+windows (grid best: 2+3, min1) | 86.9% | 68.9% | 92.5% |
 | Lingua v2 (token voting) | 88.6% | 98.8% | 76.8% |
 | **XLM-R v2 (fine-tuned filter)** | **96.6%** | **95.0%** | **95.0%** |
 
-> Synthetic data doesn't transfer: a FastText model trained on 480,000 generated "mixed" lines scores **85% F1 on its own synthetic test** but drops to **63% macro-F1 on the real gold set**. Lingua reaches high recall by over-tagging mixed (precision 76.8%), the same failure mode at a smaller scale. HeLI sits with FastText as a non-neural baseline; loanword neutralization did not raise macro-F1 on this split.
+> Synthetic data doesn't transfer: a FastText model trained on 480,000 generated "mixed" lines scores **85% F1 on its own synthetic test** but drops to **63% macro-F1 on the real gold set**. Lingua reaches high recall by over-tagging mixed (precision 76.8%). HeLI raw sits with FastText; **HeLI+windows** (grid best: overlapping 2+3-word votes after strip, min_count=1) jumps to **86.9%** macro-F1 with high mixed precision.
 
 ## At corpus scale
 

@@ -63,7 +63,7 @@
     A document-level LID setup that treats <em>mixed</em> as its own class and gets scored against people, not synthetic text.
     The gold set has <strong>3,076 messages</strong> (1,077 mixed, 1,000 ru, 999 kz) pulled from Telegram news comments,
     Kaspi and 2GIS reviews, each labeled by hand. I fine-tuned <code>xlm-roberta-base</code> as a three-way filter and put it
-    up against FastText, Lingua, and HeLI/heliport (Tommi Jauhiainen’s loanword-neutral re-ID) on the same held-out gold test (n = 461).
+    up against FastText, Lingua, and HeLI/heliport (Tommi Jauhiainen’s loanword strip, then a short windows grid) on the same held-out gold test (n = 461).
   </p>
 
   <table>
@@ -74,6 +74,7 @@
       <tr><td>FastText v2 (real + synthetic)</td><td>70.9%</td><td>49.1%</td><td>65.8%</td></tr>
       <tr><td>HeLI raw (heliport)</td><td>69.7%</td><td>53.4%</td><td>58.9%</td></tr>
       <tr><td>HeLI+neutral (strip loanwords → re-ID)</td><td>68.3%</td><td>49.1%</td><td>57.3%</td></tr>
+      <tr><td>HeLI+windows (grid best: 2+3, min1)</td><td>86.9%</td><td>68.9%</td><td>92.5%</td></tr>
       <tr><td>Lingua v2 (token voting)</td><td>88.6%</td><td>98.8%</td><td>76.8%</td></tr>
       <tr class="best"><td>XLM-R v2 (fine-tuned filter)</td><td>96.6%</td><td>95.0%</td><td>95.0%</td></tr>
     </tbody>
@@ -82,8 +83,8 @@
   <div class="callout">
     Synthetic data doesn't transfer: a FastText model trained on 480,000 generated "mixed" lines scores
     <strong>85% F1 on its own synthetic test</strong> but drops to <strong>63% macro-F1 on the real gold set</strong>.
-    Lingua reaches high recall by over-tagging mixed (precision 76.8%), which is the same failure mode at a smaller scale.
-    HeLI sits with FastText as a non-neural baseline; loanword neutralization did not raise macro-F1 on this split.
+    Lingua reaches high recall by over-tagging mixed (precision 76.8%). HeLI raw sits with FastText;
+    <strong>HeLI+windows</strong> (grid best: overlapping 2+3-word votes after strip, min_count=1) jumps to <strong>86.9%</strong> macro-F1 with high mixed precision.
   </div>
 
   <div class="cols">

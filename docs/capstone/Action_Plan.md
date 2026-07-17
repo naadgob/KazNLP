@@ -21,7 +21,7 @@
 | **Data sources** | 1) **Own corpus:** KZ Telegram channels/chats (~422k rows, `data/raw/telegram_code-switch_dataset.csv`), Kaspi reviews (~39k, `data/processed/kaspi_reviews.csv`), combined pool ~269k (`data/processed/kaspi-telegram_dataset.csv`). 2) **Gold LID (manual):** `data/processed/gold_v1.csv` — **3076** examples (mixed 1077, ru 1000, kz 999), sources: Kaspi, Telegram, Lingua candidates; labeled via `labeling_service/`. 3) **LID synthetic (train only):** `data/processed/synthetic/synthetic_all.csv` — 538 rows (`scripts/merge_synthetic.py`; folder appears after run) |
 | **Model input** | Comment/review text after normalization (`text_norm`): lowercasing, URL/@mention removal, collapsed repeated punctuation. |
 | **Model output** | Class **ru** \| **kz** \| **mixed** + confidence; for **mixed** — binary tone pos/neg (Mixed Tone v1, 97.33% on test n=525, 2GIS). RU/KZ — pretrained routing. |
-| **Baseline (simplest solution)** | 1) **FastText** supervised LID (`models/fasttext/fasttext_v1.bin`, `models/fasttext/fasttext_v2.bin`) on synthetic + seeds. 2) **Heuristic** “Kazakh letters + Cyrillic” (`data/processed/mixed_heuristic_seed.csv`). 3) **Lingua** language detector on a subset. 4) **HeLI/heliport** (Tommi Jauhiainen): loanword list + strip → re-ID (`scripts/heli_lid.py`, `data/processed/heli_loanwords_v1.txt`). Compare precision/recall/F1 on **gold_v1** (hold-out test). |
+| **Baseline (simplest solution)** | 1) **FastText** supervised LID (`models/fasttext/fasttext_v1.bin`, `models/fasttext/fasttext_v2.bin`) on synthetic + seeds. 2) **Heuristic** “Kazakh letters + Cyrillic” (`data/processed/mixed_heuristic_seed.csv`). 3) **Lingua** language detector on a subset. 4) **HeLI/heliport** (Tommi Jauhiainen): loanword list + strip → re-ID, then overlapping windows with a short grid (`scripts/heli_lid.py`; best sizes 2+3, min_count=1 → 86.92% macro-F1). Compare on **gold_v1** (hold-out test). |
 | **Metrics** | Multiclass: **macro-F1**, **per-class precision/recall**, **confusion matrix**. For mixed filter — **precision on mixed class** (target ≥0.85 on manual audit of 100 random corpus predictions). Accuracy is secondary (classes balanced in gold). |
 | **Success criteria** | Working **proof of concept**: (1) open gold LID dataset ≥3k examples; (2) fine-tuned **XLM-R-base** 3-class beating FastText on test; (3) corpus scoring script → `mixed_candidates.csv`; (4) demo (Gradio / labeler); (5) honest error analysis and limits in Final Report. |
 
@@ -69,7 +69,7 @@ Build a reproducible NLP pipeline to **reliably separate real ru+kz code-switchi
 | Stage | When | Content | Status |
 |-------|------|---------|--------|
 | **1. Problem definition** | week 1 | Topic, track, Action Plan, corpus collection | ✅ |
-| **2. Data and baseline** | weeks 1–2 | Gold EDA, guidelines, FastText/Lingua/HeLI baseline | ✅ (EDA + gold + §10 ladder incl. heliport) |
+| **2. Data and baseline** | weeks 1–2 | Gold EDA, guidelines, FastText/Lingua/HeLI baseline | ✅ (EDA + gold + §10 ladder incl. heliport windows grid) |
 | **3. Solution** | weeks 2–3 | Fine-tune XLM-R LID v2 + Mixed Tone v1, labeler, demo | ✅ |
 | **4. Evaluation** | week 3 | LID/tone metrics, CM, errors; audit 100 — deferred | ✅ partial |
 | **5. Documentation** | week 4 | Final Report.docx, WBS.xlsx, presentation, defense | 🔄 pptx / video |

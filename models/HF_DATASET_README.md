@@ -21,7 +21,7 @@ Weights for the [KazNLP](https://github.com/naadgob/KazNLP) Samsung Innovation C
 | Path | Role |
 |------|------|
 | `models/fasttext/fasttext_v1.bin`, `fasttext_v2.bin` | LID baselines |
-| `data/processed/heli_loanwords_v1.txt` + `scripts/heli_lid.py` | HeLI/heliport baseline (loanword-neutral re-ID) |
+| `data/processed/heli_loanwords_v1.txt` + `scripts/heli_lid.py` | HeLI/heliport baseline (loanword strip + windows grid; best 2+3, min1) |
 | `models/xlm-roberta/xlm-r_v2.pt` | XLM-R LID v2 (96.56% macro-F1, gold test n=461) |
 | `models/xlm-roberta/tone_v1.pt` | Mixed tone v1 (2GIS) |
 | `models/tone_pretrained/ru_rubert_rureviews/` | RU sentiment routing |

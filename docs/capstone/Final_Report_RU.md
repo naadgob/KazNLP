@@ -60,7 +60,7 @@
 | 4. Оценка | нед. 3 | LID/tone metrics, CM, gold test ladder | ✅ |
 | 5. Оформление | нед. 4 | Final Report, презентация, защита | ✅ report + pptx |
 
-**Методология:** CRISP-DM. **Основной артефакт:** `main.ipynb` (272 cells, 7 глав + §10 сравнение моделей, вкл. HeLI/heliport).
+**Методология:** CRISP-DM. **Основной артефакт:** `main.ipynb` (274 cells, 7 глав + §10 сравнение моделей, вкл. HeLI/heliport + windows grid).
 
 ---
 
@@ -275,7 +275,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 
 #### 3.3.2 Gold test comparison — все LID модели (n=461)
 
-*Единый hold-out:* `data/training/filter/v1/test.csv`. Источник: `main.ipynb` §10 (cells 267–271). HeLI/heliport добавлен после рекомендации Tommi Jauhiainen: нейтрализовать одинаковые русские заимствования и переидентифицировать (`scripts/heli_lid.py`, список `data/processed/heli_loanwords_v1.txt`).
+*Единый hold-out:* `data/training/filter/v1/test.csv`. Источник: `main.ipynb` §10 (cells 265–273). HeLI/heliport добавлен после рекомендации Tommi Jauhiainen: нейтрализовать заимствования, затем overlapping windows с коротким grid (`scripts/heli_lid.py`, список `data/processed/heli_loanwords_v1.txt`; best окна 2+3, min_count=1).
 
 | Model | Accuracy | macro-F1 | R(mixed) | P(mixed) |
 |-------|--------:|---------:|---------:|---------:|
@@ -283,6 +283,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 | FastText v2 | 71.58% | **70.92%** | 49.07% | 65.83% |
 | HeLI raw (heliport) | 70.28% | 69.73% | 53.42% | 58.90% |
 | HeLI+neutral (strip loanwords → re-ID) | 68.98% | 68.26% | 49.07% | 57.25% |
+| HeLI+windows (grid best: окна 2+3, min_count=1) | 87.20% | **86.92%** | 68.94% | 92.50% |
 | Lingua v1 | 84.60% | 84.96% | 86.34% | 73.94% |
 | Lingua v2 | 88.94% | 88.63% | 98.76% | 76.81% |
 | XLM-R LID v1 | 95.88% | 95.92% | — | — |
@@ -298,7 +299,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 
 Per-class v2: ru P=0.987 R=1.000; kz P=0.960 R=0.947; mixed P=0.950 R=0.950.
 
-**Вывод:** XLM-R v2 — единственная модель с balanced mixed P/R ~95% на gold; Lingua v2 имеет высокий recall mixed (98.8%) но низкий precision (76.8%) — непригодна для corpus filter без ручной проверки. HeLI/heliport рядом с FastText (~70% macro-F1) как интерпретируемый не-нейронный baseline; нейтрализация заимствований по совету Томми на этом тесте macro-F1 не подняла (HeLI и так почти всегда ставит gold-kz как `kaz`), а 80 gold-mixed остаются `rus` после стрипа — остаток настоящего переключения.
+**Вывод:** XLM-R v2 — единственная модель с balanced mixed P/R ~95% на gold; Lingua v2 имеет высокий recall mixed (98.8%) но низкий precision (76.8%) — непригодна для corpus filter без ручной проверки. HeLI raw/neutral рядом с FastText (~70% macro-F1); один только strip заимствований не помог, но **HeLI+windows** после короткого grid (best: окна **2+3**, `min_count=1`; ничья с 2+3+4) даёт **86.92%** macro-F1 и переводит **69/80** residual mixed-as-rus в `mixed` при high precision mixed (92.5%).
 
 #### 3.3.3 Mixed Tone v1
 
@@ -438,7 +439,7 @@ python -m pytest inference/test_api.py -q
 | Corpus row counts | CSV on disk, verified 2026-06-15 |
 | LID splits 2691/461/462 | `data/training/filter/v1/*.csv` |
 | XLM-R v2 96.56% | `main.ipynb` cells 173, 268 |
-| Gold test ladder FT/HeLI/Lingua/XLM-R | `main.ipynb` §10 cells 267–271 |
+| Gold test ladder FT/HeLI/Lingua/XLM-R | `main.ipynb` §10 cells 265–273 |
 | Tone 97.33% | `metrics_tone_test.json`, `eval_tone_v1.py` |
 | 1.66% true mixed | `main.ipynb` cells 45–46 |
 | main.csv 331468 | `main.ipynb` cell 237 + disk |

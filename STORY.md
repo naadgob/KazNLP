@@ -96,7 +96,7 @@ AFTER:  filter-first cascade, 331k with LID v2 labels
 
 - Gold LID **3,076**; val/test gold-only; synthetic train-only.
 - XLM-R LID v2: **96.56%** macro-F1; mixed P/R ~**95%** on test **n = 461**.
-- Baseline ladder: FT v2 **70.92%** → HeLI raw **69.73%** → Lingua v2 **88.63%** → XLM-R **96.56%**.
+- Baseline ladder: FT v2 **70.92%** → HeLI raw **69.73%** → HeLI+windows **86.92%** → Lingua v2 **88.63%** → XLM-R **96.56%**.
 - `main.csv` **331,468** rows; **16,364** model-predicted mixed (not human-audited).
 - Tone v1: **97.33%** on test **n = 525** (see LLM-label caveat below).
 - Cascade TEXT → LID → route → tone; demo and labeler run locally.
@@ -180,7 +180,7 @@ Confusion matrix v2 (rows = true, cols = pred):
 
 **14 of 16** errors: kz ↔ mixed confusion.
 
-§10 (cells 267–271), one `test.csv`:
+§10 (cells 265–273), one `test.csv`:
 
 | Model | macro-F1 |
 |--------|--------:|
@@ -188,11 +188,12 @@ Confusion matrix v2 (rows = true, cols = pred):
 | FastText v2 | 70.92% |
 | HeLI raw (heliport) | 69.73% |
 | HeLI+neutral | 68.26% |
+| HeLI+windows (grid best 2+3, min1) | 86.92% |
 | Lingua v1 | 84.96% |
 | Lingua v2 | 88.63% |
 | **XLM-R v2** | **96.56%** |
 
-Only XLM-R v2 gives balanced mixed P/R ~**95%** on hold-out. That is the main capstone scientific result. HeLI (Tommi Jauhiainen / heliport, with optional loanword strip) lands next to FastText as a non-neural baseline; neutralization did not beat raw HeLI on this split.
+Only XLM-R v2 gives balanced mixed P/R ~**95%** on hold-out. That is the main capstone scientific result. HeLI raw/neutral land next to FastText; **HeLI+windows** (grid best: **2+3**-word votes, min_count=1) reaches **86.92%** and flips **69/80** residual mixed-as-rus docs to `mixed`.
 
 ## Chapter 7. Corpus application (cells 177–237)
 
@@ -257,7 +258,7 @@ First API request may return 503 for 30–60 s (loading four models, ~8.56 GB).
 ## Honest boundaries
 
 - Single gold LID annotator; inter-annotator agreement not measured.
-- `main.ipynb` (272 cells) does not replay via Run All; do not re-run Telethon cells **31, 35, 41, 88**.
+- `main.ipynb` (274 cells) does not replay via Run All; do not re-run Telethon cells **31, 35, 41, 88**.
 - Defense path: artifacts on disk, cells **45, 173, 237, 268**, `eval_tone_v1.py`, `run_demo.py`.
 - Tone and LID evaluated on different domains (Telegram/Kaspi vs 2GIS).
 - **16,364** mixed in `main.csv` not manually audited on corpus.

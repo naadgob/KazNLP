@@ -60,7 +60,7 @@ Kazakhstani NLP has historically mixed **monolingual Kazakh with loans** and **r
 | 4. Evaluation | week 3 | LID/tone metrics, CM, gold test ladder | ✅ |
 | 5. Documentation | week 4 | Final Report, presentation, defense | ✅ report + pptx |
 
-**Methodology:** CRISP-DM. **Main artifact:** `main.ipynb` (272 cells, 7 chapters + §10 model comparison incl. HeLI/heliport).
+**Methodology:** CRISP-DM. **Main artifact:** `main.ipynb` (274 cells, 7 chapters + §10 model comparison incl. HeLI/heliport + windows grid).
 
 ---
 
@@ -275,7 +275,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 
 #### 3.3.2 Gold test comparison — all LID models (n=461)
 
-*Single hold-out:* `data/training/filter/v1/test.csv`. Source: `main.ipynb` §10 (cells 267–271). HeLI/heliport added after Tommi Jauhiainen recommended a loanword-neutral re-ID step (`scripts/heli_lid.py`, list `data/processed/heli_loanwords_v1.txt`).
+*Single hold-out:* `data/training/filter/v1/test.csv`. Source: `main.ipynb` §10 (cells 265–273). HeLI/heliport added after Tommi Jauhiainen recommended loanword-neutral re-ID, then overlapping windows with a short grid (`scripts/heli_lid.py`, list `data/processed/heli_loanwords_v1.txt`; best sizes 2+3, min_count=1).
 
 | Model | Accuracy | macro-F1 | R(mixed) | P(mixed) |
 |-------|--------:|---------:|---------:|---------:|
@@ -283,6 +283,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 | FastText v2 | 71.58% | **70.92%** | 49.07% | 65.83% |
 | HeLI raw (heliport) | 70.28% | 69.73% | 53.42% | 58.90% |
 | HeLI+neutral (strip loanwords → re-ID) | 68.98% | 68.26% | 49.07% | 57.25% |
+| HeLI+windows (grid best: 2+3-word votes, min_count=1) | 87.20% | **86.92%** | 68.94% | 92.50% |
 | Lingua v1 | 84.60% | 84.96% | 86.34% | 73.94% |
 | Lingua v2 | 88.94% | 88.63% | 98.76% | 76.81% |
 | XLM-R LID v1 | 95.88% | 95.92% | — | — |
@@ -298,7 +299,7 @@ text (raw) → XLM-R LID v2 (ru | kz | mixed)
 
 Per-class v2: ru P=0.987 R=1.000; kz P=0.960 R=0.947; mixed P=0.950 R=0.950.
 
-**Conclusion:** XLM-R v2 is the only model with balanced mixed P/R ~95% on gold; Lingua v2 has high mixed recall (98.8%) but low precision (76.8%) — unsuitable for corpus filter without manual review. HeLI/heliport sits near FastText (~70% macro-F1) as an interpretable non-neural baseline; Tommi-style loanword neutralization did not raise macro-F1 on this test (HeLI already tags most gold-kz as `kaz`), while 80 gold-mixed texts stay `rus` after stripping — residual true switching, as he warned.
+**Conclusion:** XLM-R v2 is the only model with balanced mixed P/R ~95% on gold; Lingua v2 has high mixed recall (98.8%) but low precision (76.8%) — unsuitable for corpus filter without manual review. HeLI raw/neutral sit near FastText (~70% macro-F1); Tommi-style loanword strip alone did not help, but **HeLI+windows** after a short grid (best: overlapping **2+3**-word heliport votes, `min_count=1`; tied with 2+3+4) reaches **86.92%** macro-F1 and flips **69/80** of the residual mixed-as-rus bucket to `mixed`, with high mixed precision (92.5%).
 
 #### 3.3.3 Mixed Tone v1
 
@@ -438,7 +439,7 @@ python -m pytest inference/test_api.py -q
 | Corpus row counts | CSV on disk, verified 2026-06-15 |
 | LID splits 2691/461/462 | `data/training/filter/v1/*.csv` |
 | XLM-R v2 96.56% | `main.ipynb` cells 173, 268 |
-| Gold test ladder FT/HeLI/Lingua/XLM-R | `main.ipynb` §10 cells 267–271 |
+| Gold test ladder FT/HeLI/Lingua/XLM-R | `main.ipynb` §10 cells 265–273 |
 | Tone 97.33% | `metrics_tone_test.json`, `eval_tone_v1.py` |
 | 1.66% true mixed | `main.ipynb` cells 45–46 |
 | main.csv 331468 | `main.ipynb` cell 237 + disk |

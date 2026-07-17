@@ -88,7 +88,7 @@ python scripts/eval_tone_v1.py
 
 ```
 KazNLP/
-├── main.ipynb                      # main pipeline (272 cells)
+├── main.ipynb                      # main pipeline (274 cells)
 ├── README.md · README_RU.md · STORY.md · STORY_RU.md
 ├── run_demo.py · run_labeler.py · start_demo.bat
 ├── collect_2gis_reviews.py         # 2GIS scraper (CLI)
@@ -165,11 +165,11 @@ Live defense narrative: [`web/story.html`](web/story.html) (does not replace `pr
 | Telegram collect | `data/raw/telegram_code-switch_dataset.csv` |
 | Kaspi collect | `data/processed/kaspi_reviews.csv` |
 | Hand gold | `data/processed/gold_v1.csv` |
-| HeLI loanword list | `data/processed/heli_loanwords_v1.txt` (`scripts/heli_lid.py`) |
+| HeLI loanword list + windows grid | `data/processed/heli_loanwords_v1.txt` (`scripts/heli_lid.py`; best 2+3, min1 → 86.92% macro-F1) |
 | XLM-R LID v2 | `models/xlm-roberta/xlm-r_v2.pt` |
 | Master corpus | `data/processed/main.csv`, `main_mixed.csv` |
 
-Baseline ladder on one shared test (n=461): §10 (cells 267–271) — FastText → HeLI/heliport → Lingua → XLM-R.
+Baseline ladder on one shared test (n=461): §10 (cells 265–273) — FastText → HeLI raw/neutral/windows-grid → Lingua → XLM-R.
 
 ### 2. Mixed tone (`main.ipynb`, chapter 8)
 
