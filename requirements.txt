@@ -11,3 +11,4 @@ beautifulsoup4
 requests
 tqdm
 lingua-language-detector
+heliport

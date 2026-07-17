@@ -1,26 +1,29 @@
 # Research context: KazNLP (Bogdan Savelyev)
 
-Generated: 2026-07-16  
-Sources: `docs/capstone/Final_Report.md`, `STORY.md`, `README.md`  
-Note: `main.ipynb` (270 cells) referenced in docs but not present in workspace at scan time.
+Generated: 2026-07-17 (numbers reconciled against `main.ipynb`; HeLI/heliport baseline added 2026-07-17)  
+Sources: `main.ipynb` (272 cells, authoritative), `docs/capstone/Final_Report.md`, `STORY.md`, `README.md`  
+Per-notebook deep dive lives in `.notebook-context/main.md`.
 
 ## Overview
 
 Solo Samsung Innovation Campus capstone. Core claim: auto LID on Kazakhstani social/reviews massively over-labels “mixed”; real code-switching (шала-казахский) must be separated from Kazakh with Russian loanwords before sentiment or corpus stats make sense.
 
-Pipeline: collect → diagnose false mixed → gold LID 3 076 → XLM-R LID v2 → score corpus → tone on mixed 2GIS → demo API.
+Pipeline: collect → diagnose false mixed → gold LID 3,076 → baselines (FastText, Lingua, HeLI/heliport) → XLM-R LID v2 → score corpus → tone on code-switched slice → demo API.
 
 ## Key numbers
 
 | Artifact | Value |
 |----------|------:|
-| Telegram | 422 141 |
-| Gold LID | 3 076 (ru/kz/mixed) |
-| XLM-R LID v2 macro-F1 (test n=461) | 96.56% |
-| FastText v2 / Lingua v2 on same test | 70.92% / 88.63% |
-| Master corpus after LID | 331 468 |
-| Model-predicted mixed | 16 364 (not human-audited) |
-| Tone gold / Tone v1 acc | 3 529 / 97.33% (mostly LLM labels) |
+| Telegram raw collected | 411,746 |
+| Kaspi+Telegram merged / dedup / cleaned | 461,270 / 388,748 / 254,601 |
+| Gold LID | 3,076 (mixed 1077 / ru 1000 / kz 999); split 2691/461/462 |
+| XLM-R LID v2 macro-F1 (test n=461) | 96.56% (acc 96.53%) |
+| FastText v2 / HeLI raw / Lingua v2 on same test | 70.92% / 69.73% / 88.63% macro-F1 |
+| HeLI+neutral (loanword strip → re-ID) | 68.26% macro-F1 (did not beat raw HeLI here) |
+| Heuristic over-labeling | 27,628 tagged mixed, 460 real (~1.7%) |
+| Master corpus after LID | 331,468 (ru 281409 / kz 33695 / mixed 16364) |
+| Model-predicted mixed | 16,364 (~4.9%, not human-audited) |
+| Tone gold / v1 test acc | 3,503 audited + 882 synth / 97.33% (n=525) |
 
 ## Publication angles
 
@@ -35,6 +38,7 @@ Nazarbayev University / NLA already published a toolkit named **KazNLP** (Makazh
 
 ## Risks for publication
 
-- Tone metrics largely measure agreement with LLM drafts  
-- Corpus mixed not fully audited  
+- Tone labels LLM-assisted then audited; 97% partly measures agreement with the labeling process  
+- Corpus mixed (16,364) model-predicted, not fully audited  
+- Notebook has many <UNRUN> cells (outputs kept across sessions, not one clean run) — reproducibility caveat  
 - Solo undergrad/capstone without faculty co-author → workshop + advisor path more realistic than ACL main

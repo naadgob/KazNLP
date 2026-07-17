@@ -230,7 +230,7 @@ XLM-RoBERTa-base, Kaggle 2× T4, AdamW lr 2e-5. v1: **95,92%** macro-F1; **v2: 9
 **Вопрос:** Почему не остановились на FastText или Lingua?
 
 **История:**  
-§10 `main.ipynb` (cells 267–268): все LID-модели на одном `test.csv` (**n = 461**). FastText v1 **63,24%** → v2 **70,92%** → Lingua v2 **88,63%** → XLM-R v2 **96,56%** macro-F1. Только XLM-R v2 даёт balanced mixed P/R ~**95%**. Lingua v2 ловит почти все mixed (recall 98,76%), но precision 76,81% — для фильтра корпуса без проверки непригодна.
+§10 `main.ipynb` (cells 267–271): все LID-модели на одном `test.csv` (**n = 461**). FastText v1 **63,24%** → v2 **70,92%** → HeLI raw **69,73%** (HeLI+neutral **68,26%**) → Lingua v2 **88,63%** → XLM-R v2 **96,56%** macro-F1. Только XLM-R v2 даёт balanced mixed P/R ~**95%**. Lingua v2 ловит почти все mixed (recall 98,76%), но precision 76,81% — для фильтра корпуса без проверки непригодна. HeLI/heliport (путь Tommi Jauhiainen: нейтрализация заимствований + re-ID) — интерпретируемая не-нейронная ступень рядом с FastText.
 
 **Доказательство:** ladder bars + footnote «один test.csv»  
 **Вывод:** Главный научный результат — LID; применяем к корпусу.
@@ -295,7 +295,7 @@ Filter-first (`inference/pipeline.py`): сырой text → XLM-R LID v2 (ru|kz|
 **Вопрос:** Как проверить без автора проекта?
 
 **История:**  
-`python scripts/setup_demo_models.py` → `python run_demo.py` (http://127.0.0.1:8000/). Labeler: `python run_labeler.py`. Tone-метрики: `python scripts/eval_tone_v1.py` → `metrics_tone_test.json`. `main.ipynb` (270 ячеек) не воспроизводится Run All; defense path — cells **45, 173, 237, 268** + скрипты. Первый запрос API может вернуть 503 на 30–60 с (загрузка ~8,56 GB моделей).
+`python scripts/setup_demo_models.py` → `python run_demo.py` (http://127.0.0.1:8000/). Labeler: `python run_labeler.py`. Tone-метрики: `python scripts/eval_tone_v1.py` → `metrics_tone_test.json`. `main.ipynb` (272 ячейки) не воспроизводится Run All; defense path — cells **45, 173, 237, 268–271** + скрипты. Первый запрос API может вернуть 503 на 30–60 с (загрузка ~8,56 GB моделей).
 
 **Доказательство:** блок команд + ссылка на demo UI  
 **Вывод:** Работает локально; limits — на финальном слайде.

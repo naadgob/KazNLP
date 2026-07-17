@@ -96,7 +96,7 @@
 
 - Gold LID **3 076**; val/test только gold; synthetic только в train.
 - XLM-R LID v2: **96,56%** macro-F1; mixed P/R ~**95%** на test **n = 461**.
-- Baseline ladder: FT v2 **70,92%** → Lingua v2 **88,63%** → XLM-R **96,56%**.
+- Baseline ladder: FT v2 **70,92%** → HeLI raw **69,73%** → Lingua v2 **88,63%** → XLM-R **96,56%**.
 - `main.csv` **331 468** строк; **16 364** model-predicted mixed (не human-audited).
 - Tone v1: **97,33%** на test **n = 525** (см. оговорку про LLM-labels ниже).
 - Cascade TEXT → LID → route → tone; demo и labeler работают локально.
@@ -180,17 +180,19 @@ Confusion matrix v2 (rows = true, cols = pred):
 
 **14 из 16** ошибок: путаница kz ↔ mixed.
 
-§10 (cells 267–268), один `test.csv`:
+§10 (cells 267–271), один `test.csv`:
 
 | Модель | macro-F1 |
 |--------|--------:|
 | FastText v1 | 63,24% |
 | FastText v2 | 70,92% |
+| HeLI raw (heliport) | 69,73% |
+| HeLI+neutral | 68,26% |
 | Lingua v1 | 84,96% |
 | Lingua v2 | 88,63% |
 | **XLM-R v2** | **96,56%** |
 
-Только XLM-R v2 даёт balanced mixed P/R ~**95%** на hold-out. Это главный научный результат capstone.
+Только XLM-R v2 даёт balanced mixed P/R ~**95%** на hold-out. Это главный научный результат capstone. HeLI (Tommi Jauhiainen / heliport, опционально strip заимствований) стоит рядом с FastText как не-нейронный baseline; нейтрализация на этом сплите raw HeLI не обогнала.
 
 ## Глава 7. Применение к корпусу (cells 177–237)
 
@@ -255,7 +257,7 @@ python scripts/eval_tone_v1.py  # tone-метрики
 ## Честные границы
 
 - Один разметчик gold LID; согласие между двумя разметчиками не измерял.
-- `main.ipynb` (270 ячеек) не воспроизводится через Run All; ячейки Telethon **31, 35, 41, 88** нельзя перезапускать.
+- `main.ipynb` (272 ячейки) не воспроизводится через Run All; ячейки Telethon **31, 35, 41, 88** нельзя перезапускать.
 - Defense path: артефакты на диске, cells **45, 173, 237, 268**, `eval_tone_v1.py`, `run_demo.py`.
 - Tone и LID оценивались на разных доменах (Telegram/Kaspi vs 2GIS).
 - **16 364** mixed в `main.csv` не проходили ручную проверку на корпусе.
@@ -283,7 +285,7 @@ python scripts/eval_tone_v1.py  # tone-метрики
 | Gold LID 3 076 | `main.ipynb` cell 144, `gold_v1.csv` | ✅ |
 | LID test 461 | `data/training/filter/v1/test.csv` | ✅ |
 | XLM-R v2 96,56% | cells 173, 268 | ✅ |
-| Ladder FT/Lingua/XLM-R | §10, n = 461 | ✅ |
+| Ladder FT/HeLI/Lingua/XLM-R | §10, n = 461 | ✅ |
 | main.csv 331 468 | cell 237, disk | ✅ |
 | main_mixed 16 364 | cell 237, model-predicted | ✅ + caveat |
 | Tone v1 97,33% n = 525 | cell 255, `metrics_tone_test.json` | ✅ |

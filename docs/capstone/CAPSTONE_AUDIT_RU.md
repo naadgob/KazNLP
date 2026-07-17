@@ -27,6 +27,7 @@
 | Модель | Файл | Статус |
 |--------|------|--------|
 | FastText v1/v2 | `models/fasttext/*.bin` | ✅ |
+| HeLI/heliport baseline | `scripts/heli_lid.py`, `data/processed/heli_loanwords_v1.txt` | ✅ |
 | XLM-R LID v2 | `models/xlm-roberta/xlm-r_v2.pt` | ✅ |
 | Mixed Tone v1 | `models/xlm-roberta/tone_v1.pt` | ✅ |
 | RU tone pretrained | `models/tone_pretrained/ru_rubert_rureviews/` | ✅ |
@@ -44,6 +45,7 @@
 | LID CM v2 | ru 150/150, kz↔mixed 14 err | `main.ipynb` |
 | FastText v1 synthetic | F1 **84.96%** | `main.ipynb` гл.1 |
 | FastText v2 seeds | P(mixed) **95.51%**, n=868 | `main.ipynb` гл.4 |
+| HeLI raw / HeLI+neutral | macro-F1 **69.73%** / **68.26%**, n=461 | `main.ipynb` §10.3 |
 | Mixed Tone v1 | acc **97.33%**, CM `[[257,6],[8,254]]` | `scripts/eval_tone_v1.py` · §7.3 |
 | Mixed Tone v2 | acc **96.19%** | `scripts/eval_tone_v1.py` |
 

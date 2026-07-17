@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Separating real Kazakh–Russian code-switching from loanwords</title>
+<style>
+  @page { size: A4; margin: 14mm 15mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #1a1a1a;
+    font-size: 10.2px;
+    line-height: 1.42;
+  }
+  .sheet { max-width: 190mm; margin: 0 auto; }
+  h1 { font-size: 17px; margin: 0 0 2px; line-height: 1.2; color: #0b3d2e; }
+  .sub { font-size: 11px; color: #444; margin: 0 0 6px; }
+  .meta { font-size: 9.4px; color: #555; margin: 0 0 10px; }
+  .meta a { color: #0b6b4f; text-decoration: none; }
+  h2 { font-size: 10.6px; text-transform: uppercase; letter-spacing: .06em;
+       color: #0b6b4f; margin: 12px 0 4px; border-bottom: 1px solid #d9e5df; padding-bottom: 2px; }
+  p { margin: 0 0 6px; }
+  .lead { font-size: 10.6px; }
+  strong { color: #0b3d2e; }
+  table { width: 100%; border-collapse: collapse; margin: 4px 0 6px; font-size: 9.6px; }
+  th, td { padding: 3px 6px; text-align: right; border-bottom: 1px solid #e6e6e6; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: #0b6b4f; border-bottom: 1px solid #bcd3c9; }
+  tr.best td { background: #eef7f2; font-weight: 600; color: #0b3d2e; }
+  .callout { background: #f6f8f7; border-left: 3px solid #0b6b4f; padding: 6px 9px; margin: 6px 0; font-size: 9.8px; }
+  .cols { display: flex; gap: 16px; }
+  .cols > div { flex: 1; }
+  ul { margin: 2px 0 6px; padding-left: 15px; }
+  li { margin-bottom: 2px; }
+  .foot { margin-top: 10px; border-top: 1px solid #d9e5df; padding-top: 6px; font-size: 9.2px; color: #555; }
+  .foot a { color: #0b6b4f; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <h1>Separating real Kazakh–Russian code-switching from loanwords</h1>
+  <p class="sub">A hand-labeled LID benchmark and an XLM-R filter for шала-қазақша in Kazakhstani user text</p>
+  <p class="meta">
+    Bogdan Savelyev · Samsung Innovation Campus (individual capstone) ·
+    <a href="mailto:bogsav999@gmail.com">bogsav999@gmail.com</a><br>
+    Code: <a href="https://github.com/naadgob/KazNLP">github.com/naadgob/KazNLP</a> ·
+    Weights &amp; data: <a href="https://huggingface.co/datasets/naadgob/kaznlp-weights">huggingface.co/datasets/naadgob/kaznlp-weights</a>
+  </p>
+
+  <h2>The problem</h2>
+  <p class="lead">
+    Off-the-shelf detectors and keyword heuristics call a Kazakh sentence "code-switched" the moment it holds a common
+    Russian loanword. On 241,576 Telegram comments, a narrow Kazakh-plus-Russian heuristic flagged
+    <strong>27,628 as mixed</strong>; reading them by hand, only <strong>460 were genuine code-switching</strong> (about 1.7%).
+    Kazakh written with everyday Russian loanwords swamps the real шала-қазақша, so any corpus count or sentiment
+    number built on automatic LID comes out inflated.
+  </p>
+
+  <h2>What I built</h2>
+  <p>
+    A document-level LID setup that treats <em>mixed</em> as its own class and gets scored against people, not synthetic text.
+    The gold set has <strong>3,076 messages</strong> (1,077 mixed, 1,000 ru, 999 kz) pulled from Telegram news comments,
+    Kaspi and 2GIS reviews, each labeled by hand. I fine-tuned <code>xlm-roberta-base</code> as a three-way filter and put it
+    up against FastText, Lingua, and HeLI/heliport (Tommi Jauhiainen’s loanword-neutral re-ID) on the same held-out gold test (n = 461).
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>LID model (gold test, n=461)</th><th>Macro-F1</th><th>Recall<sub>mixed</sub></th><th>Prec<sub>mixed</sub></th></tr>
+    </thead>
+    <tbody>
+      <tr><td>FastText v2 (real + synthetic)</td><td>70.9%</td><td>49.1%</td><td>65.8%</td></tr>
+      <tr><td>HeLI raw (heliport)</td><td>69.7%</td><td>53.4%</td><td>58.9%</td></tr>
+      <tr><td>HeLI+neutral (strip loanwords → re-ID)</td><td>68.3%</td><td>49.1%</td><td>57.3%</td></tr>
+      <tr><td>Lingua v2 (token voting)</td><td>88.6%</td><td>98.8%</td><td>76.8%</td></tr>
+      <tr class="best"><td>XLM-R v2 (fine-tuned filter)</td><td>96.6%</td><td>95.0%</td><td>95.0%</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    Synthetic data doesn't transfer: a FastText model trained on 480,000 generated "mixed" lines scores
+    <strong>85% F1 on its own synthetic test</strong> but drops to <strong>63% macro-F1 on the real gold set</strong>.
+    Lingua reaches high recall by over-tagging mixed (precision 76.8%), which is the same failure mode at a smaller scale.
+    HeLI sits with FastText as a non-neural baseline; loanword neutralization did not raise macro-F1 on this split.
+  </div>
+
+  <div class="cols">
+    <div>
+      <h2>At corpus scale</h2>
+      <p>
+        Run over a <strong>331,468-message</strong> corpus (Telegram, Kaspi, 2GIS across 10+ Kazakhstani cities), the filter
+        keeps <strong>16,364 (4.9%)</strong> as real code-switching. That's roughly an order of magnitude below what the
+        keyword heuristic claimed, which is the point: honest counts change what you can say about the corpus.
+      </p>
+    </div>
+    <div>
+      <h2>Downstream tone</h2>
+      <p>
+        On the filtered code-switched review slice, a binary tone head (XLM-R) hits <strong>97.3% macro-F1</strong> on a
+        525-example test. The set is small and the labels were LLM-drafted then audited, so I read it as evidence the
+        filtered data is usable rather than as the headline result.
+      </p>
+    </div>
+  </div>
+
+  <h2>What's honest about it</h2>
+  <ul>
+    <li>The 16,364 "mixed" corpus labels are model-predicted; only the 3,076 gold examples are fully hand-checked.</li>
+    <li>Tone labels started as LLM drafts and were then audited, so 97% partly measures agreement with that process.</li>
+    <li>Solo capstone. The notebook grew across many sessions, so a clean single-pass rerun is still on the to-do list.</li>
+  </ul>
+
+  <h2>Where I'd like input</h2>
+  <p>
+    Two things I'm unsure about: whether the loanword-vs-switch distinction is framed the way the VarDial / CALCS
+    communities would want, and which venue fits a single-author resource contribution (gold LID set, weights, and the
+    labeling tool) best. Short reactions are welcome; a longer read of the repo is a bonus, not an ask.
+  </p>
+
+  <div class="foot">
+    Everything is open: <a href="https://github.com/naadgob/KazNLP">code + notebook</a>,
+    <a href="https://huggingface.co/datasets/naadgob/kaznlp-weights">weights and the gold dataset</a>.
+    Reach me at <a href="mailto:bogsav999@gmail.com">bogsav999@gmail.com</a>.
+  </div>
+
+</div>
+</body>
+</html>

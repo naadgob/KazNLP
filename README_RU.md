@@ -86,7 +86,7 @@ python scripts/eval_tone_v1.py
 
 ```
 KazNLP/
-├── main.ipynb                      # основной пайплайн (270 ячеек)
+├── main.ipynb                      # основной пайплайн (272 ячейки)
 ├── README.md · README_RU.md · STORY.md · STORY_RU.md
 ├── run_demo.py · run_labeler.py · start_demo.bat
 ├── collect_2gis_reviews.py         # скрапер 2GIS (CLI)
@@ -162,10 +162,11 @@ Live на защите: [`web/story.html`](web/story.html) (не заменяе�
 | Сбор Telegram | `data/raw/telegram_code-switch_dataset.csv` |
 | Сбор Kaspi | `data/processed/kaspi_reviews.csv` |
 | Ручной gold | `data/processed/gold_v1.csv` |
+| HeLI loanword list | `data/processed/heli_loanwords_v1.txt` (`scripts/heli_lid.py`) |
 | XLM-R LID v2 | `models/xlm-roberta/xlm-r_v2.pt` |
 | Мастер-корпус | `data/processed/main.csv`, `main_mixed.csv` |
 
-Baseline ladder на одном test n=461: §10 (cells 267–268).
+Baseline ladder на одном test n=461: §10 (cells 267–271) — FastText → HeLI/heliport → Lingua → XLM-R.
 
 ### 2. Mixed tone (`main.ipynb`, глава 8)
 
